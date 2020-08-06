@@ -277,6 +277,13 @@ Route::group(
                 Route::post('state', 'Api\Master\StateController@create');
                 Route::put('state', 'Api\Master\StateController@update');
 
+                //Technical Standard
+                Route::get('technical_standard', 'Api\Master\TechnicalStandardController@index');
+                Route::get('technical_standard/check', 'Api\Master\TechnicalStandardController@check');
+                Route::get('technical_standard/full', 'Api\Master\TechnicalStandardController@joined');
+                Route::get('technical_standard/product_kind', 'Api\Master\TechnicalStandardController@showByProductKind');
+                Route::get('technical_standard/{id}', 'Api\Master\TechnicalStandardController@show');
+
                 //Unit
                 Route::get('unit/section/{id}', 'Api\Master\UnitController@showBySection');
 

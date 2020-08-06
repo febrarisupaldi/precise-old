@@ -16,13 +16,13 @@ class TechnicalStandardController extends Controller
     }
 
     public function show($id){
-        $this->technicalStd = DB::table('precise.techincal_std_hd as hd')
+        $this->technicalStd = DB::table('precise.technical_std_hd as hd')
             ->where('hd.technical_std_hd_id', $id)
             ->select(
                 'technical_std_hd_id',
                 'hd.product_item_id',
                 'pi.item_code',
-                'pi.`item_name',
+                'pi.item_name',
                 'pi.item_alias',
                 'default_tonnage', 
                 'int_weight_def',
@@ -56,7 +56,7 @@ class TechnicalStandardController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
             $product_kind = explode("-", $kind);
-            $this->technicalStd =  DB::table('precise.techincal_std_hd as hd')
+            $this->technicalStd =  DB::table('precise.technical_std_hd as hd')
                 ->whereIn('pi.kind_code', $product_kind)
                 ->select(
                     'technical_std_hd_id',
@@ -112,7 +112,7 @@ class TechnicalStandardController extends Controller
                     'ppt.process_description',
                     'technical_std_dt_description', 
                     'dt.mold_hd_id',
-                    'mold_numberj',
+                    'mold_number',
                     'mold_name', 
                     'dt.machine_id',
                     'machine_code',
@@ -136,7 +136,7 @@ class TechnicalStandardController extends Controller
                     'int_runner_weight_def', 
                     'dt.int_runner_weight_std',
                     'dt.int_runner_weight_min',
-                    'dt.`int_runner_weight_max',
+                    'dt.int_runner_weight_max',
                     'ext_runner_weight_def',
                     'dt.ext_runner_weight_std',
                     'dt.ext_runner_weight_min',
@@ -157,7 +157,7 @@ class TechnicalStandardController extends Controller
                 ->join('precise.technical_std_dt as dt','hd.technical_std_hd_id','=','dt.technical_std_hd_id')
                 ->leftJoin('precise.product_item as pi','hd.product_item_id','=','pi.item_id')
                 ->leftJoin('precise.production_process_type as ppt','dt.process_type_id','=','ppt.process_type_id')
-                ->leftJoin('precise.mold_hd as mh','dt.mold_hd_id','=','mh.mold_mh_id')
+                ->leftJoin('precise.mold_hd as mh','dt.mold_hd_id','=','mh.mold_hd_id')
                 ->leftJoin('precise.machine as m','dt.machine_id','=','m.machine_id')
                 ->get();
             
@@ -192,7 +192,7 @@ class TechnicalStandardController extends Controller
     public function create(Request $request){
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
-            
+
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);

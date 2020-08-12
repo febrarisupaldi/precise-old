@@ -110,7 +110,7 @@ class WorkOrderController extends Controller
             'workcenter_id'         =>'required|exists:workcenter,workcenter_id',
             'product_id'            =>'required|exists:product,product_id',
             'work_order_qty'        =>'required|numeric',
-            'bom_default'           =>'required|exists:bom_hd,bom_hd_id',
+            'bom_default'           =>'nullable|exists:bom_hd,bom_hd_id',
             'start_date'            =>'required|date_format:Y-m-d|before_or_equal:est_finish_date',
             'est_finish_date'       =>'required|date_format:Y-m-d|after_or_equal:start_date',
             'parent_work_order_id'  =>'nullable|exists:work_order,work_order_hd_id',
@@ -149,11 +149,11 @@ class WorkOrderController extends Controller
     public function update(Request $request){
         $validator = Validator::make($request->all(), [
             'work_order_hd_id'      =>'required',
-            'work_order_number'     =>'required|unique:work_order,work_order_number',
+            'work_order_number'     =>'required',
             'workcenter_id'         =>'required|exists:workcenter,workcenter_id',
             'product_id'            =>'required|exists:product,product_id',
             'work_order_qty'        =>'required|numeric',
-            'bom_default'           =>'required|exists:bom_hd,bom_hd_id',
+            'bom_default'           =>'nullable|exists:bom_hd,bom_hd_id',
             'start_date'            =>'required|date_format:Y-m-d|before_or_equal:est_finish_date',
             'est_finish_date'       =>'required|date_format:Y-m-d|after_or_equal:start_date',
             'parent_work_order_id'  =>'nullable|exists:work_order,work_order_hd_id',

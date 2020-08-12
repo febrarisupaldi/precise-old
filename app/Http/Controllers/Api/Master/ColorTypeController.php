@@ -15,12 +15,12 @@ class ColorTypeController extends Controller
     {
         $this->colorType = DB::table('color_type')->select(
             'color_type_id',
-            'color_type_code as Kode tipe warna',
-            'color_type_name as Nama tipe warna',
-            'created_on as Tanggal input',
-            'created_by as User input',
-            'updated_on as Tanggal update',
-            'updated_by as User update'
+            'color_type_code',
+            'color_type_name',
+            'created_on',
+            'created_by',
+            'updated_on',
+            'updated_by'
         )->get();
 
         return response()->json(['data' => $this->colorType]);

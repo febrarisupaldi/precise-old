@@ -192,7 +192,18 @@ class TechnicalStandardController extends Controller
     public function create(Request $request){
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
-
+            'product_item_id'           => 'required|exists:product_item,item_id',
+            'default_tonnage'           => 'required|numeric',
+            'int_weight_def'            => 'required|numeric',
+            'ext_weight_def'            => 'required|numeric',
+            'int_cycle_time_def'        => 'required|numeric',
+            'ext_cycle_time_def'        => 'required|numeric',
+            'int_runner_weight_def'     => 'required|numeric',
+            'ext_runner_weight_def'     => 'required|numeric',
+            'int_material_weight_def'   => 'required|numeric',
+            'ext_material_weight_def'   => 'required|numeric',
+            'created_by'                => 'required',
+            'detail'                    => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);

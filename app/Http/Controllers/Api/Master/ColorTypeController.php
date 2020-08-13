@@ -34,7 +34,7 @@ class ColorTypeController extends Controller
             'color_type_name'
         )->get();
 
-        return response()->json(['data' => $this->colorType]);
+        return response()->json($this->colorType);
     }
 
     public function create(Request $request)
@@ -135,6 +135,10 @@ class ColorTypeController extends Controller
             if ($type == 'code') {
                 $this->checkColorType = DB::table('color_type')
                     ->where('color_type_code', $value)
+                    ->count();
+            }else if($type == 'name'){
+                $this->checkColorType = DB::table('color_type')
+                    ->where('color_type_name', $value)
                     ->count();
             }
             return response()->json(['status' => 'ok', 'message' => $this->checkColorType]);

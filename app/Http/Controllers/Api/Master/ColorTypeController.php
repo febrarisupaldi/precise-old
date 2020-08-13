@@ -32,7 +32,7 @@ class ColorTypeController extends Controller
             'color_type_id',
             'color_type_code',
             'color_type_name'
-        )->get();
+        )->first();
 
         return response()->json($this->colorType);
     }

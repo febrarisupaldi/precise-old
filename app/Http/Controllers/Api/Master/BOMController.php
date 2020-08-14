@@ -50,6 +50,7 @@ class BOMController extends Controller
                 'dt.bom_dt_id',
                 'dt.bom_hd_id', 
                 'dt.material_id',
+                'p.product_code AS material_code',
                 'p.product_name', 
                 'dt.material_qty', 
                 'dt.material_uom',

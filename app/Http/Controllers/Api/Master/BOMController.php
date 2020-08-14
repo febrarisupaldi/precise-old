@@ -172,8 +172,8 @@ class BOMController extends Controller
             'bom_name'           => 'required|unique:bom_hd,bom_name',
             'product_id'         => 'required|exists:product,product_id',
             'product_qty'        => 'required',
-            'start_date'         => 'required|date_format:Y-m-d',
-            'expired_date'       => 'required|date_format:Y-m-d',
+            'start_date'         => 'required',
+            'expired_date'       => 'required',
             'usage_priority'     => 'required',
             'created_by'         => 'required'
         ]);
@@ -236,8 +236,8 @@ class BOMController extends Controller
             'bom_name'           => 'required',
             'product_id'         => 'required|exists:product,product_id',
             'product_qty'        => 'required',
-            'start_date'         => 'required|date_format:Y-m-d',
-            'expired_date'       => 'required|date_format:Y-m-d',
+            'start_date'         => 'required',
+            'expired_date'       => 'required',
             'usage_priority'     => 'required',
             'updated_by'         => 'required',
             'reason'             => 'required'

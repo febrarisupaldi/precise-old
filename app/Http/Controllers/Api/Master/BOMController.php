@@ -169,7 +169,7 @@ class BOMController extends Controller
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
             'bom_code'           => 'required|unique:bom_hd,bom_code',
-            'bom_name'           => 'required|unique:bom_hd,bom_name',
+            'bom_name'           => 'required',
             'product_id'         => 'required|exists:product,product_id',
             'product_qty'        => 'required',
             'start_date'         => 'required',

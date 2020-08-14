@@ -125,9 +125,9 @@ class BOMController extends Controller
 
     public function joined($id)
     {
-        $id = explode('-', $id);
+        $workcenter_ids = explode('-', $id);
         $this->bom = DB::table('precise.bom_hd as hd')
-        ->whereIn('pw.workcenter_id',$id)
+        ->whereIn('pw.workcenter_id',$workcenter_ids)
         ->select(
             'hd.bom_hd_id',
             'hd.bom_code',

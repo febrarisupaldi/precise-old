@@ -141,6 +141,8 @@ class BOMController extends Controller
             'dt.material_id',
             'prod2.product_code AS material_code',
             'prod2.product_name AS material_name',
+            'dt.material_qty',
+            'dt.material_uom',
             DB::raw("
                 case hd.is_active 
                     when 0 then 'Tidak aktif'
@@ -150,7 +152,6 @@ class BOMController extends Controller
             'hd.start_date',
             'hd.expired_date',
             'hd.usage_priority',
-            'hd.bom_description',
             'dt.created_on',
             'dt.created_by',
             'dt.updated_on',

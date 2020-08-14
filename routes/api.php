@@ -46,10 +46,15 @@ Route::group(
                 Route::get('bank', 'Api\Master\BankController@index');
 
                 //BOM
+                Route::get('bom/check', 'Api\Master\BOMController@check');
                 Route::get('bom/{id}', 'Api\Master\BOMController@show');
                 Route::get('bom/product/{id}', 'Api\Master\BOMController@showByProduct');
                 Route::get('bom/workcenter/{id}', 'Api\Master\BOMController@showByWorkcenter');
-                
+                Route::get('bom/full/{id}', 'Api\Master\BOMController@joined');
+                Route::post('bom', 'Api\Master\BOMController@create');
+                Route::post('bom/detail', 'Api\Master\BOMController@update');
+                Route::delete('bom/{id}', 'Api\Master\BOMController@destroy');
+                                
                 //city
                 Route::get('city', 'Api\Master\CityController@index');
                 Route::get('city/check', 'Api\Master\CityController@check');

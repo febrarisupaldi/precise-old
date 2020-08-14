@@ -52,7 +52,7 @@ Route::group(
                 Route::get('bom/workcenter/{id}', 'Api\Master\BOMController@showByWorkcenter');
                 Route::get('bom/full/{id}', 'Api\Master\BOMController@joined');
                 Route::post('bom', 'Api\Master\BOMController@create');
-                Route::post('bom/detail', 'Api\Master\BOMController@update');
+                Route::put('bom/detail', 'Api\Master\BOMController@update');
                 Route::delete('bom/{id}', 'Api\Master\BOMController@destroy');
                                 
                 //city

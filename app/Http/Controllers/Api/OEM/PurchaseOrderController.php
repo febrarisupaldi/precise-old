@@ -38,6 +38,7 @@ class PurchaseOrderController extends Controller
             ->select(
                 'oem_order_hd_id',
                 'oem_order_number',
+                'oem_so_number',
                 'oem_order_date', 
                 'hd.customer_id',
                 'customer_code',

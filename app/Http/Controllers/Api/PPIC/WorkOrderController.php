@@ -74,6 +74,7 @@ class WorkOrderController extends Controller
                 'wo.work_order_qty',
                 'bom.bom_code', 
                 'bom.bom_name',
+                "wo.parent_work_order_id",
                 'wo.start_date',
                 'wo.est_finish_date',
                 'wo.work_order_description', 

@@ -38,6 +38,7 @@ class PurchaseOrderController extends Controller
             ->select(
                 'oem_order_hd_id',
                 'oem_order_number',
+                'oem_so_number',
                 'oem_order_date', 
                 'hd.customer_id',
                 'customer_code',
@@ -474,6 +475,7 @@ class PurchaseOrderController extends Controller
                             'v.sum_received_qty',
                             'v.outstanding_qty',		            
                             'dt.due_date',
+                            DB::raw("datediff(due_date, date(now())) as days_left"),
                             'dt.loss_tolerance',
                             'hd.created_on',
                             'hd.created_by',
@@ -508,6 +510,7 @@ class PurchaseOrderController extends Controller
                     'product_code',
                     'product_name',
                     'oem_order_qty',
+                    'oem_order_dt_seq',
                     'v.sum_on_going_qty as total_on_going_qty',
                     'v.sum_received_qty as total_received_qty',
                     'v.outstanding_qty as outstanding_qty',
@@ -589,7 +592,8 @@ class PurchaseOrderController extends Controller
             ->orWhere('v.oem_order_hd_id', $id)
             ->select(
                 'v.oem_order_hd_id', 
-                'v.oem_order_number', 
+                'v.oem_order_number',
+                'ooh.oem_so_number', 
                 'v.oem_order_date',
                 DB::raw("datediff(due_date, date(now())) as days_left"),
                 'pc.product_id', 

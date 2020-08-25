@@ -591,6 +591,7 @@ class PurchaseOrderController extends Controller
                 'v.oem_order_hd_id', 
                 'v.oem_order_number', 
                 'v.oem_order_date',
+                DB::raw("datediff(due_date, date(now())) as days_left"),
                 'pc.product_id', 
                 'product_code',
                 'product_name', 

@@ -51,7 +51,7 @@ class WorkOrderController extends Controller
                 )->leftJoin('precise.product as p','wo.product_id','=','p.product_id')
                 ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
                 ->leftJoin('precise.bom_hd as bom','wo.bom_default','=','bom.bom_hd_id')
-		->leftJoin('precise.work_order_status as wos','wo.work_order_status','=','wos.work_order_status_code')
+		        ->leftJoin('precise.work_order_status as wos','wo.work_order_status','=','wos.work_order_status_code')
                 ->get();
 
             return response()->json(["data" => $this->workOrder]);
@@ -79,11 +79,15 @@ class WorkOrderController extends Controller
                 'wo.est_finish_date',
                 'wo.work_order_description', 
                 'wo.work_order_type',
-                'wo.work_order_status'
+                'wo.work_order_status',
+                'wt.type_description',
+                'ws.status_description'
             )
             ->leftJoin("precise.product as p","wo.product_id","=","p.product_id")
             ->leftJoin("precise.workcenter as w","wo.workcenter_id","=","w.workcenter_id")
             ->leftJoin("precise.bom_hd as bom","wo.bom_default","=","bom.bom_hd_id")
+            ->leftJoin("precise.work_order_type as wt","wo.work_order_type","=","wt.work_order_type_code")
+            ->leftJoin("precise.work_order_status as ws","wo.work_order_status","=","ws.work_order_status_code")
             ->first();
         
         return response()->json($this->workOrder);

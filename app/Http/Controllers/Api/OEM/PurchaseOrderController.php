@@ -475,7 +475,7 @@ class PurchaseOrderController extends Controller
                             'v.sum_received_qty',
                             'v.outstanding_qty',		            
                             'dt.due_date',
-                            DB::raw("datediff(due_date, date(now())) as days_left"),
+                            DB::raw("datediff(dt.due_date, date(now())) as days_left"),
                             'dt.loss_tolerance',
                             'hd.created_on',
                             'hd.created_by',

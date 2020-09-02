@@ -124,9 +124,6 @@ class BOMController extends Controller
         return response()->json(['data' => $this->bom]);
     }
 
-<<<<<<< HEAD
-    public function joined($id)    
-=======
     public function showBOMHd()
     {
         $this->bom = DB::table('precise.bom_hd as a')
@@ -198,7 +195,6 @@ class BOMController extends Controller
     }
 
     public function joined($id)
->>>>>>> 199df69cdb60abbdf9ea0b89b4d0b98a6d6491e7
     {
         $workcenter_ids = explode('-', $id);
         $this->bom = DB::table('precise.bom_hd as hd')

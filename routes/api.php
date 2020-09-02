@@ -54,6 +54,9 @@ Route::group(
                 Route::post('bom', 'Api\Master\BOMController@create');
                 Route::put('bom/detail', 'Api\Master\BOMController@update');
                 Route::delete('bom/{id}', 'Api\Master\BOMController@destroy');
+                Route::get('bom/usage_priority/{id}', 'Api\Master\BOMController@showByProductGetTopUsagePriority');
+                Route::get('bom', 'Api\Master\BOMController@showBOMHd');
+                Route::get('bom/search/{id}', 'Api\Master\BOMController@showBOMForSearch');
                                 
                 //city
                 Route::get('city', 'Api\Master\CityController@index');
@@ -394,6 +397,9 @@ Route::group(
                 Route::post('work_order', 'Api\PPIC\WorkOrderController@create');
                 Route::put('work_order', 'Api\PPIC\WorkOrderController@update');
                 Route::delete('work_order/{id}', 'Api\PPIC\WorkOrderController@destroy');
+
+
+                Route::get('production_result', 'Api\PPIC\ProductionResultController@index');
 
                 
             }

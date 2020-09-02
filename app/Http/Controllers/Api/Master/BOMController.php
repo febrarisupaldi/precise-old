@@ -124,7 +124,81 @@ class BOMController extends Controller
         return response()->json(['data' => $this->bom]);
     }
 
+<<<<<<< HEAD
     public function joined($id)    
+=======
+    public function showBOMHd()
+    {
+        $this->bom = DB::table('precise.bom_hd as a')
+            ->select(
+                'a.bom_hd_id',
+                'a.bom_code',
+                'a.bom_name',
+                'a.product_id',
+                'b.product_code',
+                'b.product_name',
+            )
+            ->Join('precise.product AS b', 'a.product_id', '=', 'b.product_id')
+            ->Join('precise.product_workcenter AS pw', 'a.product_id', '=', 'pw.product_id')
+            ->Join('precise.workcenter AS w', 'pw.workcenter_id', '=', 'w.workcenter_id')
+            ->get();
+        return response()->json(['data' => $this->bom]);
+    }
+
+    public function showByProductGetTopUsagePriority($id)
+    {
+        $this->bom = DB::table('precise.bom_hd')
+            ->where('product_id', $id)
+            ->select(
+                'bom_hd_id',
+                'bom_code',
+                'bom_name',
+                'usage_priority'
+            )
+            ->first();
+        return response()->json($this->bom);
+    }
+
+    public function showBOMForSearch($id)
+    {
+        $sub = DB::table('precise.bom_dt as dt')
+            ->where('dt.material_id', $id)
+            ->select('dt.bom_hd_id')
+            ->groupBy('dt.bom_hd_id');
+
+        $this->bom = DB::table(DB::raw('('.$sub->toSql().') as c'))
+            ->select(
+                'a.bom_hd_id',
+                'a.bom_code',
+                'a.bom_name',
+                'a.bom_description',
+                'a.product_id',
+                'b.product_code',
+                'b.product_name',
+                'a.product_qty',
+                'a.product_uom',
+                'w.workcenter_id',
+                'w.workcenter_code',
+                'w.workcenter_name',
+                'a.is_active',
+                'a.start_date', 
+                'a.expired_date', 
+                'a.usage_priority',
+                'a.created_on',
+                'a.created_by',
+                'a.updated_on',
+                'a.updated_by')
+            ->leftJoin('precise.bom_hd AS a', 'c.bom_hd_id', '=', 'a.bom_hd_id')
+            ->leftJoin('precise.product AS b', 'a.product_id', '=', 'b.product_id')
+            ->leftJoin('precise.product_workcenter AS pw', 'a.product_id', '=', 'pw.product_id')
+            ->leftJoin('precise.workcenter AS w', 'pw.workcenter_id', '=', 'w.workcenter_id')
+            ->mergeBindings($sub)
+            ->get();
+        return response()->json(['data' => $this->bom]);
+    }
+
+    public function joined($id)
+>>>>>>> 199df69cdb60abbdf9ea0b89b4d0b98a6d6491e7
     {
         $workcenter_ids = explode('-', $id);
         $this->bom = DB::table('precise.bom_hd as hd')
@@ -175,7 +249,6 @@ class BOMController extends Controller
             'product_id'         => 'required|exists:product,product_id',
             'product_qty'        => 'required',
             'start_date'         => 'required',
-            'expired_date'       => 'required',
             'usage_priority'     => 'required',
             'created_by'         => 'required'
         ]);
@@ -239,7 +312,6 @@ class BOMController extends Controller
             'product_id'         => 'required|exists:product,product_id',
             'product_qty'        => 'required',
             'start_date'         => 'required',
-            'expired_date'       => 'required',
             'usage_priority'     => 'required',
             'updated_by'         => 'required',
             'reason'             => 'required'
@@ -366,8 +438,13 @@ class BOMController extends Controller
                     ->where('product_id', $value)
                     ->where('usage_priority', $usage_priority)
                     ->count();
+           } elseif ($type == "deleted") {
+            $this->checkBom = DB::table('work_order')
+                ->where('bom_default', $value)
+                ->count();
            }
             return response()->json(['status' => 'ok', 'message' => $this->checkBom]);
         }
     }
+    
 }

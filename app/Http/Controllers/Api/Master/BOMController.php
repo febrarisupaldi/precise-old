@@ -152,7 +152,7 @@ class BOMController extends Controller
                 'bom_name',
                 'usage_priority'
             )
-            ->orderBy('start_date', 'DESC')
+            ->orderBy('usage_priority', 'DESC')
             ->first();
         return response()->json($this->bom);
     }

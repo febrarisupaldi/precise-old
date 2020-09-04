@@ -135,9 +135,10 @@ class BOMController extends Controller
                 'b.product_code',
                 'b.product_name',
             )
-            ->Join('precise.product AS b', 'a.product_id', '=', 'b.product_id')
-            ->Join('precise.product_workcenter AS pw', 'a.product_id', '=', 'pw.product_id')
-            ->Join('precise.workcenter AS w', 'pw.workcenter_id', '=', 'w.workcenter_id')
+            ->distinct('a.bom_hd_id')
+            ->leftJoin('precise.product AS b', 'a.product_id', '=', 'b.product_id')
+            ->leftJoin('precise.product_workcenter AS pw', 'a.product_id', '=', 'pw.product_id')
+            ->leftJoin('precise.workcenter AS w', 'pw.workcenter_id', '=', 'w.workcenter_id')
             ->get();
         return response()->json(['data' => $this->bom]);
     }

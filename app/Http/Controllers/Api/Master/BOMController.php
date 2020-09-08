@@ -179,7 +179,12 @@ class BOMController extends Controller
                 'w.workcenter_id',
                 'w.workcenter_code',
                 'w.workcenter_name',
-                'a.is_active',
+                DB::raw("
+                case a.is_active 
+                    when 0 then 'Tidak aktif'
+                    when 1 then 'Aktif' 
+                end as 'is_active'
+                "),
                 'a.start_date', 
                 'a.expired_date', 
                 'a.usage_priority',

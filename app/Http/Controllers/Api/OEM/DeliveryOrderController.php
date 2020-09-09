@@ -85,6 +85,7 @@ class DeliveryOrderController extends Controller
                     'hd.oem_delivery_date',
                     'hd.oem_order_hd_id',
                     'poHd.oem_order_number',
+                    'poHd.oem_so_number',
                     'hd.customer_id',
                     'customer_code',
                     'customer_name',

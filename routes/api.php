@@ -398,9 +398,11 @@ Route::group(
                 Route::put('work_order', 'Api\PPIC\WorkOrderController@update');
                 Route::delete('work_order/{id}', 'Api\PPIC\WorkOrderController@destroy');
 
-
                 Route::get('production_result', 'Api\PPIC\ProductionResultController@index');
-
+                Route::get('production_result/{id}', 'Api\PPIC\ProductionResultController@show');
+                Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
+                Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
+                Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
                 
             }
         );

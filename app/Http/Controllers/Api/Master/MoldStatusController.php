@@ -67,8 +67,7 @@ class MoldStatusController extends Controller
         $validator = Validator::make($request->all(), [
             'status_code'   => 'required',
             'is_active'     => 'boolean',
-            'updated_by'    => 'required',
-            'reason'        => 'required'
+            'updated_by'    => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);

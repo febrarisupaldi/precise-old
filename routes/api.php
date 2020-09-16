@@ -158,7 +158,11 @@ Route::group(
 
                 //Mold Status
                 Route::get('mold_status','Api\Master\MoldStatusController@index');
-
+                Route::get('mold_status/check', 'Api\Master\MoldStatusController@check');
+                Route::get('mold_status/{id}', 'Api\Master\MoldStatusController@show');
+                Route::post('mold_status', 'Api\Master\MoldStatusController@create');
+                Route::put('mold_status', 'Api\Master\MoldStatusController@update');
+                
                 //Position
                 Route::get('position', 'Api\Master\PositionController@index');
 

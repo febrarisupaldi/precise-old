@@ -50,7 +50,7 @@ class MenuController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'menu_name' => 'required',
+            'menu_name'=> 'required',
             'menu_category_id' => 'required|exists:menu_category,menu_category_id',
             'created_by' => 'required'
         ]);

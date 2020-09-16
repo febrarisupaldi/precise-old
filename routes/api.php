@@ -141,6 +141,13 @@ Route::group(
                 Route::post('machine', 'Api\Master\MachineController@create');
                 Route::put('machine', 'Api\Master\MachineController@update');
 
+                //Machine Status
+                Route::get('machine_status','Api\Master\MachineStatusController@index');
+                Route::get('machine_status/check', 'Api\Master\MachineStatusController@check');
+                Route::get('machine_status/{id}', 'Api\Master\MachineStatusController@show');
+                Route::post('machine_status', 'Api\Master\MachineStatusController@create');
+                Route::put('machine_status', 'Api\Master\MachineStatusController@update');
+
                 //menu
                 Route::get('menu', 'Api\Master\MenuController@index');
                 Route::get('menu/check', 'Api\Master\MenuController@check');

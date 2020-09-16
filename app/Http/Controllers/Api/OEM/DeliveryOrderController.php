@@ -568,11 +568,7 @@ class DeliveryOrderController extends Controller
                     'dt.uom_code', 
                     'dt.received_qty',
                     'dt.uom_code_received',
-<<<<<<< HEAD
 		            DB::raw("ifnull(dt.delivery_qty, 0) - ifnull(dt.received_qty, 0) as receipt_diff"),
-=======
-                    DB::raw("dt.delivery_qty - dt.received_qty as receipt_diff"),
->>>>>>> 5786d7cad5133d3ba0255a97f47a6648ac5e39e7
                     'hd.created_on',
                     'hd.created_by',
                     'hd.updated_on',

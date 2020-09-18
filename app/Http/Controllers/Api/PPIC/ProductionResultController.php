@@ -73,6 +73,7 @@ class ProductionResultController extends Controller
             'dt.PrdNumber',
             'dt.ResultSeq',
             'dt.ProductCode',
+            'p.product_code',
             'dt.ProductCode AS old_product_code', 
             'dt.product_id', 
             'dt.result_qty',
@@ -170,7 +171,7 @@ class ProductionResultController extends Controller
                         'trans_qty_price'       => 0.0000,
                         'trans_ppn_percent'     => 0.0000,
                         'trans_ppn_amount'      => 0.0000,
-                        'created_by'            => $transdt['created_by']
+                        'created_by'            => $data['created_by']
                     ];
                 }
 
@@ -216,7 +217,7 @@ class ProductionResultController extends Controller
                         'InvtNmbr'              => $object1->transNumber,
                         'InvtType'              => $transType->trans_type_code,
                         'trans_hd_id'           => $transhd,
-                        'created_by'            => $d['created_by']
+                        'created_by'            => $data['created_by']
                     ];
                 }
 
@@ -281,7 +282,7 @@ class ProductionResultController extends Controller
                             'trans_uom'             => $transdt['uom_code'],
                             'trans_in_qty_t'        => $transdt['result_qty'],
                             'trans_uom_t'           => $transdt['uom_code'],
-                            'updated_by'            => $transdt['updated_by']                            
+                            'updated_by'            => $data['updated_by']                            
                     ]);
                 }
                 
@@ -336,7 +337,7 @@ class ProductionResultController extends Controller
                             'InvtNmbr'              => $d['InvtNmbr'],
                             'InvtType'              => $d['InvtType'],
                             'trans_hd_id'           => $d['trans_hd_id'],
-                            'created_by'            => $d['created_by']
+                            'created_by'            => $data['updated_by']
                         ];
                     }
                     DB::table('precise.production_result_dt')
@@ -360,7 +361,7 @@ class ProductionResultController extends Controller
                             'InvtNmbr'              => $d['InvtNmbr'],
                             'InvtType'              => $d['InvtType'],
                             'trans_hd_id'           => $d['trans_hd_id'],
-                            'updated_by'            => $d['updated_by']
+                            'updated_by'            => $data['updated_by']
                         ]);
                     }
                 }

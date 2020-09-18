@@ -113,7 +113,7 @@ class ProductionResultController extends Controller
     public function create(Request $request){
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
-            'result_date'           =>'required|date_format:Y-m-d',
+            'result_date'           =>'required',
             'result_shift'          =>'required',
             'work_order_hd_id'      =>'required|exists:work_order,work_order_hd_id',
             'PrdNumber'             =>'required',
@@ -242,7 +242,7 @@ class ProductionResultController extends Controller
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
             'result_hd_id'          =>'required',
-            'result_date'           =>'required|date_format:Y-m-d',
+            'result_date'           =>'required',
             'result_shift'          =>'required',
             'work_order_hd_id'      =>'required|exists:work_order,work_order_hd_id',
             'PrdNumber'             =>'required',

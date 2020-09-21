@@ -16,19 +16,25 @@ class ProductionResultController extends Controller
     public function index(Request $request){
         $start = $request->get('start');
         $end = $request->get('end');
+        $wc = $request->get('workcenter');
         $validator = Validator::make($request->all(), [
             'start'     => 'required|date_format:Y-m-d|before_or_equal:end',
-            'end'       => 'required|date_format:Y-m-d|after_or_equal:start'
+            'end'       => 'required|date_format:Y-m-d|after_or_equal:start',
+            'workcenter'=> 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
+            $workcenter = explode("-", $wc);
             $this->productionResult = DB::table('precise.production_result_hd as pr')
+                ->whereIn('wo.workcenter_id',$workcenter)
                 ->whereBetween('pr.result_date', [$start, $end])
                 ->select(
                     'pr.result_hd_id',
                     'pr.result_date',
-                    'pr.result_shift', 
+                    'pr.result_shift',
+                    'w.workcenter_code',
+                    'w.workcenter_name',  
                     'pr.work_order_hd_id',
                     'pr.PrdNumber', 
                     'pr.ResultSeq',
@@ -36,7 +42,9 @@ class ProductionResultController extends Controller
                     'pr.created_by',
                     'pr.updated_on',
                     'pr.updated_by'
-                )->leftJoin('precise.work_order as wo','pr.work_order_hd_id','=','wo.work_order_hd_id')
+                )
+                ->leftJoin('precise.work_order as wo','pr.work_order_hd_id','=','wo.work_order_hd_id')
+                ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
                 ->get();
 
             return response()->json(["data" => $this->productionResult]);
@@ -52,6 +60,9 @@ class ProductionResultController extends Controller
                 'pr.result_shift',
                 'pr.work_order_hd_id',
                 'pr.PrdNumber', 
+                'wo.workcenter_id',
+                'w.workcenter_code',
+                'w.workcenter_name',
                 'pr.ResultSeq',
                 'wh.warehouse_id',
                 'wh.warehouse_code',
@@ -63,6 +74,8 @@ class ProductionResultController extends Controller
              )
             ->leftJoin('precise.production_result_dt as prd','pr.result_hd_id','=','prd.result_hd_id')
             ->leftJoin('precise.warehouse as wh','prd.result_warehouse','=','wh.warehouse_id')
+            ->leftJoin('precise.work_order as wo', 'pr.work_order_hd_id','=','wo.work_order_hd_id')
+            ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
             ->first();
 
         $detail = DB::table('precise.production_result_dt as dt')
@@ -100,6 +113,9 @@ class ProductionResultController extends Controller
             "warehouse_code"      => $master->warehouse_code,
             "warehouse_name"      => $master->warehouse_name,
             "PrdNumber"           => $master->PrdNumber,
+            "workcenter_id"       => $master->workcenter_id,
+            "workcenter_code"     => $master->workcenter_code,
+            "workcenter_name"     => $master->workcenter_name,
             "ResultSeq"           => $master->ResultSeq,
             "created_on"          => $master->created_on,
             "created_by"          => $master->created_by,

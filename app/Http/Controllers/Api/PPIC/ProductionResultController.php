@@ -87,6 +87,7 @@ class ProductionResultController extends Controller
             'dt.ResultSeq',
             'dt.ProductCode',
             'p.product_code',
+            'p.product_name',
             'dt.ProductCode AS old_product_code', 
             'dt.product_id', 
             'dt.result_qty',

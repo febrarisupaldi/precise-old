@@ -23,6 +23,7 @@ class WorkcenterController extends Controller
                 when 0 then 'Tidak aktif'
                 when 1 then 'Aktif' 
             end as 'Status aktif'"),
+                'production_type',
                 'wh.created_on as Tanggal input',
                 'wh.created_by as User input',
                 'wh.updated_on as Tanggal update',

@@ -364,19 +364,137 @@ class MoldController extends Controller
                         'updated_by'        =>$data['updated_by']
                     ]);
                 
-                if($data['inserted_detail'] != null)
+                if($data['inserted'] != null)
                 {
-                    foreach($data['inserted_detail'] as $d)
+                    foreach($data['inserted'] as $d)
                     {
-                        $dt[] = [
-                            'mold_hd_id'        => $data['mold_hd_id'],
-                            'item_id'           => $d['item_id'],
-                            'created_by'        => $d['created_by']
-                        ];
+                        $validator = Validator::make(json_decode(json_encode($d),true),[
+                            'item_id'           =>'required|exists:product_item,item_id',
+                            'created_by'        =>'required',
+                            'cavity_detail'     =>'required'
+                        ]);
+                        if ($validator->fails()) {
+                            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                        } else {
+                            $id_dt = DB::table('precise.mold_dt')->insertGetId([
+                                'mold_hd_id'        => $data['mold_hd_id'],
+                                'item_id'           => $d['item_id'],
+                                'created_by'        => $d['created_by']
+                            ]);
+
+                            foreach($d['cavity'] as $dc){
+                                $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                    'cavity_number'     =>'required',
+                                    'product_weight'    =>'required|numeric',
+                                    'product_weight_uom'=>'required|exists:uom,uom_code',
+                                    'is_active'         =>'required|boolean',
+                                    'created_by'        =>'required'
+                                ]);
+    
+                                if ($validator->fails()) {
+                                    return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                                } else {
+                                    $detail_cavity = [
+                                        'mold_dt_id'        =>$id_dt,
+                                        'cavity_number'     =>$dc['cavity_number'],
+                                        'product_weight'    =>$dc['product_weight'],
+                                        'product_weight_uom'=>$dc['product_weight_uom'],
+                                        'is_active'         =>$dc['is_active'],
+                                        'created_by'        =>$dc['created_by']
+                                    ];
+
+                                    DB::table('precise.mold_cavity')
+                                    ->insert($detail_cavity);
+                                }
+                            }
+                        }  
                     }
-                    DB::table('precise.material_customer_dt')
-                    ->insert($dt);
                 }
+
+                if($data['updated'] != null)
+                {
+                    foreach($data['updated'] as $d)
+                    {
+                        $validator = Validator::make(json_decode(json_encode($d),true),[
+                            'mold_dt_id'        =>'required|exists:mold_dt,mold_dt_id',
+                            'mold_hd_id'        =>'required|exists:mold_hd,mold_hd_id',
+                            'item_id'           =>'required|exists:product_item,item_id',
+                            'updated_by'        =>'required'
+                        ]);
+
+                        if ($validator->fails()) {
+                            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                        } else {
+                            DB::table('precise.mold_dt')
+                            ->where('mold_dt_id', $d['mold_dt_id'])
+                            ->update([
+                                'mold_hd_id'    =>$d['mold_hd_id'],
+                                'item_id'       =>$d['item_id'],
+                                'updated_by'    =>$d['updated_by']
+                            ]);
+
+                            if($d['cavity_inserted'] != null){
+                                foreach($d['cavity_inserted'] as $dc){
+                                    $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                        'mold_dt_id'        =>'required|exists:mold_dt,mold_dt_id',
+                                        'cavity_number'     =>'required',
+                                        'product_weight'    =>'required|numeric',
+                                        'product_weight_uom'=>'required|exists:uom,uom_code',
+                                        'is_active'         =>'required|boolean',
+                                        'created_by'        =>'required'
+                                    ]);
+
+                                    if ($validator->fails()) {
+                                        return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                                    } else {
+                                        $detail = [
+                                            'mold_dt_id'        =>$d['mold_dt_id'],
+                                            'cavity_number'     =>$dc['cavity_number'],
+                                            'product_weight'    =>$dc['product_weight'],
+                                            'product_weight_uom'=>$dc['product_weight_uom'],
+                                            'is_active'         =>$dc['is_active'],
+                                            'created_by'        =>$dc['created_by']
+                                        ];
+
+                                        DB::table('precise.mold_cavity')
+                                        ->insert($detail);
+                                    }
+                                }
+                            }
+
+                            if($d['cavity_updated'] != null){
+                                foreach($d['cavity_updated'] as $dc){
+                                    $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                        'mold_cavity_id'    =>'required|exists:mold_cavity,mold_cavity_id',
+                                        'mold_dt_id'        =>'required|exists:mold_dt,mold_dt_id',
+                                        'cavity_number'     =>'required',
+                                        'product_weight'    =>'required|numeric',
+                                        'product_weight_uom'=>'required|exists:uom,uom_code',
+                                        'is_active'         =>'required|boolean',
+                                        'created_by'        =>'required'
+                                    ]);
+
+                                    if ($validator->fails()) {
+                                        return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                                    } else {
+                                        DB::table('precise.mold_cavity')
+                                        ->where('mold_cavity_id', $dc['mold_cavity_id'])
+                                        ->update([
+                                            'mold_dt_id'        =>$dc['mold_dt_id'],
+                                            'cavity_number'     =>$dc['cavity_number'],
+                                            'product_weight'    =>$dc['product_weight'],
+                                            'product_weight_uom'=>$dc['product_weight_uom'],
+                                            'is_active'         =>$dc['is_active'],
+                                            'created_by'        =>$dc['created_by']
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                DB::commit();
+                return response()->json(['status' => 'ok', 'message' => 'Mold have been updated']);
             }catch(\Exception $e){
                 DB::rollBack();
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()]);

@@ -49,6 +49,9 @@ class MaterialUsageController extends Controller
                     'b.bom_name',
                     'mu.PrdNumber', 
                     'mu.usage_description',
+                    'mu.InvtNmbr',
+                    'mu.InvtType',
+                    'mu.trans_hd_id',
                     'mu.created_on',
                     'mu.created_by',
                     'mu.updated_on',
@@ -195,13 +198,13 @@ class MaterialUsageController extends Controller
                     'work_order_number'  => $data['PrdNumber'],
                     'created_by'         => $data['created_by']
                 ]);
-
+                $trans_seq = 0;
                 foreach($data['detail'] as $transdt){
                     $whDt[] = [
                         'trans_hd_id'           => $transhd,
                         'trans_number'          => $object1->transNumber,
                         'trans_type'            => $transType->trans_type_id,
-                        'trans_seq'             => 1,
+                        'trans_seq'             => $trans_seq,
                         'product_id'            => $transdt['material_id'],
                         'trans_in_qty'          => 0.0000,
                         'trans_out_qty'         => $transdt['material_qty'],
@@ -215,6 +218,7 @@ class MaterialUsageController extends Controller
                         'trans_ppn_amount'      => 0.0000,
                         'created_by'            => $data['created_by']
                     ];
+                    $trans_seq = $trans_seq + 1;
                 }
 
                 DB::table('precise.warehouse_trans_dt')
@@ -264,11 +268,11 @@ class MaterialUsageController extends Controller
 
                 $trans = DB::table('precise.material_usage')
                         ->where('trans_hd_id', $transhd)
-                        ->select('PrdNumber')
+                        ->select('usage_id')
                         ->first();
 
                 DB::commit();
-                return response()->json(['status' => 'ok', 'message' => $transhd], 200);
+                return response()->json(['status' => 'ok', 'message' => $trans->usage_id], 200);
             }
             catch(\Exception $e){
                 DB::rollBack();
@@ -313,6 +317,25 @@ class MaterialUsageController extends Controller
                 ->where('trans_type_name', 'Production Usage')
                 ->select('trans_type_id','trans_type_code')
                 ->first();
+                
+                $tran_Seq = 0;
+                $tranSeq = DB::table('precise.warehouse_trans_dt')
+                ->where('trans_hd_id', $data['trans_hd_id'])
+                ->select(
+                    'trans_seq'
+                )
+                ->orderBy('trans_seq', 'DESC')
+                ->first();
+
+                if($tranSeq != null)
+                {
+                    $tran_Seq = $tranSeq->trans_seq + 1;                                 
+                }
+                else
+                {
+                    $tran_Seq = 1;
+                }
+               
 
                 $PrdSeq = 0;
                 if($data['work_order_hd_id'] != $data['old_work_order_hd_id']){
@@ -378,7 +401,7 @@ class MaterialUsageController extends Controller
                             'trans_hd_id'           => $data['trans_hd_id'],
                             'trans_number'          => $data['InvtNmbr'],
                             'trans_type'            => $transType->trans_type_id,
-                            'trans_seq'             => 1,
+                            'trans_seq'             => $tran_Seq,
                             'product_id'            => $transdt['material_id'],
                             'trans_in_qty'          => 0.0000,
                             'trans_out_qty'         => $transdt['material_qty'],
@@ -392,6 +415,7 @@ class MaterialUsageController extends Controller
                             'trans_ppn_amount'      => 0.0000,
                             'created_by'            => $data['created_by']
                         ];
+                        $tran_Seq = $tran_Seq + 1;
                     }
     
                     DB::table('precise.warehouse_trans_dt')

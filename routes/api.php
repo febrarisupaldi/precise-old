@@ -414,6 +414,12 @@ Route::group(
                 Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
                 Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
+
+                Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
+                Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');
+                Route::post('material_usage', 'Api\PPIC\MaterialUsageController@create');
+                Route::put('material_usage/detail', 'Api\PPIC\MaterialUsageController@update');
+                Route::delete('material_usage/{id}', 'Api\PPIC\MaterialUsageController@destroy');
                 
             }
         );

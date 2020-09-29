@@ -321,7 +321,7 @@ class MoldController extends Controller
             'workcenter_id'     => 'required|exists:workcenter,workcenter_id',
             'is_family_mold'    => 'required|boolean',
             //'customer_id'       => 'required|exists:customer,customer_id',
-            'status_code'       => 'required|exists:mold_status,status_code',
+            //status_code'       => 'required|exists:mold_status,status_code',
             'remake_from'       => 'nullable|exists:mold_hd,mold_hd_id',
             //'length'            => 'required|numeric',
             //'width'             => 'required|numeric',
@@ -333,7 +333,7 @@ class MoldController extends Controller
             //'plate_size_width'  => 'required|numeric',
             //'plate_size_uom'    => 'required|exists:uom,uom_code',
             'updated_by'        => 'required',
-            'detail'            => 'required'
+            //'detail'            => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
@@ -369,12 +369,12 @@ class MoldController extends Controller
                     foreach($data['inserted'] as $d)
                     {
                         $validator = Validator::make(json_decode(json_encode($d),true),[
-                            'item_id'           =>'required|exists:product_item,item_id',
-                            'created_by'        =>'required',
-                            'cavity_detail'     =>'required'
+                            'item_id'       =>'required|exists:product_item,item_id',
+                            'created_by'    =>'required',
+                            'cavity_added'  =>'required'
                         ]);
                         if ($validator->fails()) {
-                            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                            return response()->json(['status' => 'error1', 'message' => $validator->errors()]);
                         } else {
                             $id_dt = DB::table('precise.mold_dt')->insertGetId([
                                 'mold_hd_id'        => $data['mold_hd_id'],
@@ -382,7 +382,7 @@ class MoldController extends Controller
                                 'created_by'        => $d['created_by']
                             ]);
 
-                            foreach($d['cavity'] as $dc){
+                            foreach($d['cavity_added'] as $dc){
                                 $validator = Validator::make(json_decode(json_encode($dc),true),[
                                     'cavity_number'     =>'required',
                                     'product_weight'    =>'required|numeric',
@@ -392,7 +392,7 @@ class MoldController extends Controller
                                 ]);
     
                                 if ($validator->fails()) {
-                                    return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                                    return response()->json(['status' => 'error2', 'message' => $validator->errors()]);
                                 } else {
                                     $detail_cavity = [
                                         'mold_dt_id'        =>$id_dt,
@@ -423,7 +423,7 @@ class MoldController extends Controller
                         ]);
 
                         if ($validator->fails()) {
-                            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                            return response()->json(['status' => 'error3', 'message' => $validator->errors()]);
                         } else {
                             DB::table('precise.mold_dt')
                             ->where('mold_dt_id', $d['mold_dt_id'])
@@ -445,7 +445,7 @@ class MoldController extends Controller
                                     ]);
 
                                     if ($validator->fails()) {
-                                        return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                                        return response()->json(['status' => 'error4', 'message' => $validator->errors()]);
                                     } else {
                                         $detail = [
                                             'mold_dt_id'        =>$d['mold_dt_id'],
@@ -471,11 +471,11 @@ class MoldController extends Controller
                                         'product_weight'    =>'required|numeric',
                                         'product_weight_uom'=>'required|exists:uom,uom_code',
                                         'is_active'         =>'required|boolean',
-                                        'created_by'        =>'required'
+                                        'updated_by'        =>'required'
                                     ]);
 
                                     if ($validator->fails()) {
-                                        return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                                        return response()->json(['status' => 'error5', 'message' => $validator->errors()]);
                                     } else {
                                         DB::table('precise.mold_cavity')
                                         ->where('mold_cavity_id', $dc['mold_cavity_id'])
@@ -485,7 +485,7 @@ class MoldController extends Controller
                                             'product_weight'    =>$dc['product_weight'],
                                             'product_weight_uom'=>$dc['product_weight_uom'],
                                             'is_active'         =>$dc['is_active'],
-                                            'created_by'        =>$dc['created_by']
+                                            'updated_by'        =>$dc['updated_by']
                                         ]);
                                     }
                                 }
@@ -513,9 +513,13 @@ class MoldController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
             if ($type == "number") {
-                $this->mold = DB::table('mold_hd')->where('mold_number', $value)->count();
+                $this->mold = DB::table('mold_hd')
+                    ->where('mold_number', $value)
+                    ->count();
             }else if($type == "name"){
-                $this->mold = DB::table('mold_hd')->where('mold_name', $value)->count();
+                $this->mold = DB::table('mold_hd')
+                    ->where('mold_name', $value)
+                    ->count();
             }
 
             return response()->json(['status' => 'ok', 'message' => $this->mold]);

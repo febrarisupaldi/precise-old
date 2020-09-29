@@ -44,7 +44,8 @@ class WorkcenterController extends Controller
                 'warehouse.warehouse_id',
                 'warehouse.warehouse_code',
                 'warehouse.warehouse_name',
-                'workcenter.is_active'
+                'workcenter.is_active',
+                'production_type'
             )->leftJoin('warehouse', 'workcenter.default_warehouse', '=', 'warehouse.warehouse_id')
             ->where('workcenter_id', $id)
             ->get();
@@ -63,7 +64,8 @@ class WorkcenterController extends Controller
                 'wh.warehouse_id',
                 'wh.warehouse_code',
                 'wh.warehouse_name',
-                'wc.is_active'
+                'wc.is_active',
+                'wc.production_type'
             )->leftJoin('precise.warehouse as wh', 'wc.default_warehouse', '=', 'wh.warehouse_id')
             ->where('wc.workcenter_code', $id)
             ->get();

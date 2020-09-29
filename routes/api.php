@@ -155,13 +155,13 @@ Route::group(
                 Route::post('menu', 'Api\Master\MenuController@create');
                 Route::put('menu', 'Api\Master\MenuController@update');
                 Route::delete('menu/{id}', 'Api\Master\MenuController@destroy');
-
-                // //Mold
-                // Route::get('mold/check','Api\Master\MoldController@check');
-                // Route::get('mold/product_item/{id}','Api\Master\MoldController@showByProductItem');
-                // Route::get('mold/workcenter/{id}','Api\Master\MoldController@index');
-                // Route::get('mold/{id}','Api\Master\MoldController@show');
-                // Route::post('mold','Api\Master\MoldController@create');
+                
+                //Mold
+                Route::get('mold/check','Api\Master\MoldController@check');
+                Route::get('mold/product_item/{id}','Api\Master\MoldController@showByProductItem');
+                Route::get('mold/workcenter/{id}','Api\Master\MoldController@index');
+                Route::get('mold/{id}','Api\Master\MoldController@show');
+                Route::post('mold','Api\Master\MoldController@create');
 
                 //Mold Status
                 Route::get('mold_status','Api\Master\MoldStatusController@index');

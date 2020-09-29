@@ -148,7 +148,7 @@ class ProductionResultController extends Controller
 
                 $transType = DB::table('precise.warehouse_trans_type')
                 ->where('trans_type_name', 'Production Result')
-                ->select('trans_type_code')
+                ->select('trans_type_id', 'trans_type_code')
                 ->first();
                 $object = (object)$transNum;
                 foreach ($transNum as $key => $value)
@@ -163,7 +163,7 @@ class ProductionResultController extends Controller
                 $transhd = DB::table('precise.warehouse_trans_hd')
                 ->insertGetId([
                     'trans_number'       => $object1->transNumber,
-                    'trans_type'         => $transType->trans_type_code,
+                    'trans_type'         => $transType->trans_type_id,
                     'trans_date'         => $data['result_date'],
                     'trans_from'         => $data['warehouse_id'],
                     'work_order_id'      => $data['work_order_hd_id'],
@@ -175,7 +175,7 @@ class ProductionResultController extends Controller
                     $whDt[] = [
                         'trans_hd_id'           => $transhd,
                         'trans_number'          => $object1->transNumber,
-                        'trans_type'            => $transType->trans_type_code,
+                        'trans_type'            => $transType->trans_type_id,
                         'trans_seq'             => 1,
                         'product_id'            => $transdt['product_id'],
                         'trans_in_qty'          => $transdt['result_qty'],
@@ -279,8 +279,6 @@ class ProductionResultController extends Controller
                 foreach($data['detail'] as $transdt){
                     DB::table('precise.warehouse_trans_hd')
                     ->where('trans_hd_id', $transdt['trans_hd_id'])
-                    ->where('trans_number',$transdt['InvtNmbr'])
-                    ->where('trans_type',$transdt['InvtType'])
                     ->update([
                         'trans_date'         => $data['result_date'],
                         'trans_from'         => $data['warehouse_id'],
@@ -291,8 +289,6 @@ class ProductionResultController extends Controller
     
                     DB::table('precise.warehouse_trans_dt')
                         ->where('trans_hd_id', $transdt['trans_hd_id'])
-                        ->where('trans_number',$transdt['InvtNmbr'])
-                        ->where('trans_type',$transdt['InvtType'])
                         ->update([
                             'product_id'            => $transdt['product_id'],
                             'trans_in_qty'          => $transdt['result_qty'],
@@ -354,7 +350,7 @@ class ProductionResultController extends Controller
                             'InvtNmbr'              => $d['InvtNmbr'],
                             'InvtType'              => $d['InvtType'],
                             'trans_hd_id'           => $d['trans_hd_id'],
-                            'created_by'            => $data['updated_by']
+                            'created_by'            => $data['created_by']
                         ];
                     }
                     DB::table('precise.production_result_dt')

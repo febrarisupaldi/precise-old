@@ -107,7 +107,6 @@ class MaterialUsageController extends Controller
         ->select(
             'dt.usage_id', 
             'dt.material_id',
-            'dt.material_id as old_material_id',
             'p.product_code',
             'p.product_name',
             'b.material_qty as bom_qty',
@@ -313,7 +312,15 @@ class MaterialUsageController extends Controller
                     'work_order_number'  => $data['PrdNumber'],
                     'updated_by'         => $data['updated_by']
                 ]);
-                               
+                
+                DB::table('precise.warehouse_trans_dt')
+                ->where('trans_hd_id', $data['trans_hd_id'])
+                ->delete();
+        
+                DB::table('precise.material_usage')
+                ->where('trans_hd_id', $data['trans_hd_id'])
+                ->delete();
+    
                 $transType = DB::table('precise.warehouse_trans_type')
                 ->where('trans_type_name', 'Production Usage')
                 ->select('trans_type_id','trans_type_code')
@@ -337,155 +344,76 @@ class MaterialUsageController extends Controller
                     $tran_Seq = 1;
                 }
                
-
                 $PrdSeq = 0;
-                if($data['work_order_hd_id'] != $data['old_work_order_hd_id']){
-                    $workOrderSeq = DB::table('precise.material_usage')
-                    ->where('work_order_hd_id', $data['work_order_hd_id'])
-                    ->select(
-                        'PrdSeq'
-                    )
-                    ->orderBy('PrdSeq', 'DESC')
-                    ->first();
-                
-                    if($workOrderSeq != null)
-                    {
-                        $PrdSeq = $workOrderSeq->PrdSeq + 1;                                
-                    }
-                    else
-                    {
-                        $PrdSeq = 1;
-                    }
-                }
-                else{
-                    $PrdSeq = $data['PrdSeq'];
-                }
-                
-                DB::table('precise.material_usage')
-                ->where('trans_hd_id', $data['trans_hd_id'])
-                ->update([
-                    'production_date'     => $data['production_date'],
-                    'usage_description'   => $data['usage_description'],
-                    'updated_by'          => $data['updated_by']
-                ]);
-
-                if($data['inserted'] != null)
+                $workOrderSeq = DB::table('precise.material_usage')
+                ->where('work_order_hd_id', $data['work_order_hd_id'])
+                ->select(
+                    'PrdSeq'
+                )
+                ->orderBy('PrdSeq', 'DESC')
+                ->first();
+            
+                if($workOrderSeq != null)
                 {
-                    foreach($data['inserted'] as $d)
-                    {
-                        $dt[] = [
-                        'production_date'       => $data['production_date'],
-                        'work_order_hd_id'      => $data['work_order_hd_id'],
-                        'PrdNumber'             => $data['PrdNumber'],
-                        'PrdSeq'                => $PrdSeq,
-                        'usage_description'     => $data['usage_description'],
-                        'bom_hd_id'             => $data['bom_hd_id'],
-                        'bom_factor'            => $data['bom_factor'],                        
-                        'material_id'           => $d['material_id'],
-                        'material_qty'          => $d['material_qty'],
-                        'material_uom'          => $d['material_uom'],
-                        'material_std_qty'      => $d['material_qty'],
-                        'material_std_uom'      => $d['material_uom'],
-                        'warehouse_id'          => $data['warehouse_id'],
-                        'InvtNmbr'              => $data['InvtNmbr'],
-                        'InvtType'              => $data['InvtType'],
+                    $PrdSeq = $workOrderSeq->PrdSeq + 1;                                
+                }
+                else
+                {
+                    $PrdSeq = 1;
+                }
+                           
+                   
+                foreach($data['detail'] as $transdt){
+                    $whDt[] = [
                         'trans_hd_id'           => $data['trans_hd_id'],
+                        'trans_number'          => $data['InvtNmbr'],
+                        'trans_type'            => $transType->trans_type_id,
+                        'trans_seq'             => $tran_Seq,
+                        'product_id'            => $transdt['material_id'],
+                        'trans_in_qty'          => 0.0000,
+                        'trans_out_qty'         => $transdt['material_qty'],
+                        'trans_uom'             => $transdt['material_uom'],
+                        'trans_in_qty_t'        => 0.0000,
+                        'trans_out_qty_t'       => $transdt['material_qty'],
+                        'trans_uom_t'           => $transdt['material_uom'],
+                        'trans_price'           => 0.0000,
+                        'trans_qty_price'       => 0.0000,
+                        'trans_ppn_percent'     => 0.0000,
+                        'trans_ppn_amount'      => 0.0000,
                         'created_by'            => $data['created_by']
-                        ];
-                        $PrdSeq = $PrdSeq + 1;
-                    }
-                    DB::table('precise.material_usage')
-                    ->insert($dt);
-
-                    foreach($data['inserted'] as $transdt){
-                        $whDt[] = [
-                            'trans_hd_id'           => $data['trans_hd_id'],
-                            'trans_number'          => $data['InvtNmbr'],
-                            'trans_type'            => $transType->trans_type_id,
-                            'trans_seq'             => $tran_Seq,
-                            'product_id'            => $transdt['material_id'],
-                            'trans_in_qty'          => 0.0000,
-                            'trans_out_qty'         => $transdt['material_qty'],
-                            'trans_uom'             => $transdt['material_uom'],
-                            'trans_in_qty_t'        => 0.0000,
-                            'trans_out_qty_t'       => $transdt['material_qty'],
-                            'trans_uom_t'           => $transdt['material_uom'],
-                            'trans_price'           => 0.0000,
-                            'trans_qty_price'       => 0.0000,
-                            'trans_ppn_percent'     => 0.0000,
-                            'trans_ppn_amount'      => 0.0000,
-                            'created_by'            => $data['created_by']
-                        ];
-                        $tran_Seq = $tran_Seq + 1;
-                    }
-    
-                    DB::table('precise.warehouse_trans_dt')
-                    ->insert($whDt);
+                    ];
+                    $tran_Seq = $tran_Seq + 1;
                 }
 
-                if($data['updated'] != null)
+                DB::table('precise.warehouse_trans_dt')
+                ->insert($whDt);
+
+                foreach($data['detail'] as $d)
                 {
-                    foreach($data['updated'] as $d)
-                    {
-                        DB::table('precise.material_usage')
-                        ->where('usage_id',$d['usage_id'])
-                        ->where('trans_hd_id',$data['trans_hd_id'])
-                        ->where('material_id',$d['old_material_id'])
-                        ->update([
-                            'production_date'       => $data['production_date'],
-                            'work_order_hd_id'      => $data['work_order_hd_id'],
-                            'PrdNumber'             => $data['PrdNumber'],
-                            'PrdSeq'                => $PrdSeq,
-                            'usage_description'     => $data['usage_description'],
-                            'bom_hd_id'             => $data['bom_hd_id'],
-                            'bom_factor'            => $data['bom_factor'],                        
-                            'material_id'           => $d['material_id'],
-                            'material_qty'          => $d['material_qty'],
-                            'material_uom'          => $d['material_uom'],
-                            'material_std_qty'      => $d['material_qty'],
-                            'material_std_uom'      => $d['material_uom'],
-                            'warehouse_id'          => $data['warehouse_id'],
-                            'updated_by'            => $data['updated_by']
-                        ]);
-                    }
-
-                    foreach($data['updated'] as $transdt){
-                        DB::table('precise.warehouse_trans_dt')
-                            ->where('trans_hd_id', $data['trans_hd_id'])
-                            ->where('material_id',$d['old_material_id'])
-                            ->update([
-                                'product_id'            => $transdt['material_id'],
-                                'trans_out_qty'         => $transdt['material_qty'],
-                                'trans_uom'             => $transdt['material_uom'],
-                                'trans_out_qty_t'       => $transdt['material_qty'],
-                                'trans_uom_t'           => $transdt['material_uom'],
-                                'updated_by'            => $data['updated_by']                            
-                        ]);
-                    }
+                    $dt[] = [
+                    'production_date'       => $data['production_date'],
+                    'work_order_hd_id'      => $data['work_order_hd_id'],
+                    'PrdNumber'             => $data['PrdNumber'],
+                    'PrdSeq'                => $PrdSeq,
+                    'usage_description'     => $data['usage_description'],
+                    'bom_hd_id'             => $data['bom_hd_id'],
+                    'bom_factor'            => $data['bom_factor'],                        
+                    'material_id'           => $d['material_id'],
+                    'material_qty'          => $d['material_qty'],
+                    'material_uom'          => $d['material_uom'],
+                    'material_std_qty'      => $d['material_qty'],
+                    'material_std_uom'      => $d['material_uom'],
+                    'warehouse_id'          => $data['warehouse_id'],
+                    'InvtNmbr'              => $data['InvtNmbr'],
+                    'InvtType'              => $data['InvtType'],
+                    'trans_hd_id'           => $data['trans_hd_id'],
+                    'created_by'            => $data['created_by']
+                    ];
+                    $PrdSeq = $PrdSeq + 1;
                 }
-
-                if($data['deleted'] != null)
-                {
-                    $delete = array();
-                    $deleteUsageID = array();
-                    foreach($data['deleted'] as $del){
-                        $delete[] = $del['material_id'];
-                        $deleteUsageID[] = $del['usage_id'];
-                    }
-
-                    DB::table('precise.material_usage')
-                    ->where('usage_id',$deleteUsageID)
-                    ->where('trans_hd_id',$data['trans_hd_id'])
-                    ->whereIn('material_id', $delete)
-                    ->delete();
-                    
-                    DB::table('precise.warehouse_trans_dt')
-                    ->where('trans_hd_id',$data['trans_hd_id'])
-                    ->whereIn('material_id', $delete)
-                    ->delete();
-
-                }
-
+                DB::table('precise.material_usage')
+                ->insert($dt);               
+                                
                 DB::commit();
                 return response()->json(['status' => 'ok', 'message' => 'Material Usage have been updated'], 200);
                 

@@ -49,6 +49,7 @@ class MoldController extends Controller
                 'hd.plate_size_length',
                 'hd.plate_size_width',
                 'hd.plate_size_uom',
+                'hd.is_active',
                 'hd.created_on',
                 'hd.created_by',
                 'hd.updated_on',
@@ -100,7 +101,8 @@ class MoldController extends Controller
                 'hd.weight_uom', 
                 'hd.plate_size_length',
                 'hd.plate_size_width',
-                'hd.plate_size_uom'
+                'hd.plate_size_uom',
+                'hd.is_active'
             )
             ->leftJoin('precise.workcenter as w','hd.workcenter_id','=','w.workcenter_id')
             ->leftJoin('precise.customer as c','hd.customer_id','=','c.customer_id')
@@ -171,6 +173,7 @@ class MoldController extends Controller
                 'plate_size_length'  => $master->plate_size_length,
                 'plate_size_width'   => $master->plate_size_width,
                 'plate_size_uom'     => $master->plate_size_uom,
+                'is_active'          => $master->is_active,
                 'detail'             => $all
             );
         return response()->json($this->mold);

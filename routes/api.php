@@ -162,7 +162,7 @@ Route::group(
                 Route::get('mold/workcenter/{id}','Api\Master\MoldController@index');
                 Route::get('mold/{id}','Api\Master\MoldController@show');
                 Route::post('mold','Api\Master\MoldController@create');
-                Route::post('mold/detail','Api\Master\MoldController@update');
+                Route::put('mold', 'Api\Master\MoldController@update');
 
                 //Mold Status
                 Route::get('mold_status','Api\Master\MoldStatusController@index');
@@ -415,13 +415,12 @@ Route::group(
                 Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
                 Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
-
+                
                 Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
                 Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');
                 Route::post('material_usage', 'Api\PPIC\MaterialUsageController@create');
                 Route::put('material_usage/detail', 'Api\PPIC\MaterialUsageController@update');
                 Route::delete('material_usage/{id}', 'Api\PPIC\MaterialUsageController@destroy');
-                
             }
         );
 

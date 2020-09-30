@@ -107,6 +107,7 @@ class MaterialUsageController extends Controller
         ->select(
             'dt.usage_id', 
             'dt.material_id',
+            'dt.material_id as old_material_id',
             'p.product_code',
             'p.product_name',
             'b.material_qty as bom_qty',
@@ -198,7 +199,7 @@ class MaterialUsageController extends Controller
                     'work_order_number'  => $data['PrdNumber'],
                     'created_by'         => $data['created_by']
                 ]);
-                $trans_seq = 0;
+                $trans_seq = 1;
                 foreach($data['detail'] as $transdt){
                     $whDt[] = [
                         'trans_hd_id'           => $transhd,

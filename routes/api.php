@@ -162,7 +162,7 @@ Route::group(
                 Route::get('mold/workcenter/{id}','Api\Master\MoldController@index');
                 Route::get('mold/{id}','Api\Master\MoldController@show');
                 Route::post('mold','Api\Master\MoldController@create');
-                Route::put('mold', 'Api\Master\MoldController@update');
+                Route::post('mold/detail', 'Api\Master\MoldController@update');
 
                 //Mold Status
                 Route::get('mold_status','Api\Master\MoldStatusController@index');

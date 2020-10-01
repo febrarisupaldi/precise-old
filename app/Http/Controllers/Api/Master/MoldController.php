@@ -125,7 +125,7 @@ class MoldController extends Controller
 
             foreach($detail as $details){
                 $cavity = DB::table('precise.mold_cavity as mc')
-                    ->where('md.mold_hd_id', $id)
+                    ->where('mc.mold_dt_id', $details->mold_dt_id)
                     ->select(
                         'mold_cavity_id',
                         'mc.mold_dt_id',

@@ -107,6 +107,7 @@ class MaterialUsageController extends Controller
         ->select(
             'dt.usage_id', 
             'dt.material_id',
+            'dt.PrdSeq',
             'p.product_code',
             'p.product_name',
             DB::raw(

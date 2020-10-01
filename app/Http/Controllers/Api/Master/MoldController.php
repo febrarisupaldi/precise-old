@@ -179,6 +179,61 @@ class MoldController extends Controller
         return response()->json($this->mold);
     }
 
+    public function joined($id){
+        $workcenter = explode("-", $id);
+        $this->mold = DB::table('precise.mold_hd as hd')
+            ->whereIn('hd.workcenter_id', $workcenter)
+            ->select(
+                'hd.mold_hd_id',
+                'hd.mold_number',
+                'hd.mold_name',
+                'hd.workcenter_id',
+                'workcenter_code',
+                'workcenter_name',
+                'hd.is_family_mold',
+                'hd.customer_id',
+                'customer_code',
+                'customer_name',
+                'hd.status_code',
+                'status_description',
+                'hd.remake_from',
+                'hd2.mold_number',
+                'hd2.mold_name',
+                'hd.mold_description', 
+                'hd.length',
+                'hd.width',
+                'hd.height',
+                'hd.dimension_uom', 
+                'hd.weight',
+                'hd.weight_uom', 
+                'hd.plate_size_length',
+                'hd.plate_size_width',
+                'hd.plate_size_uom',
+                'hd.is_active',
+                'dt.item_id',
+                'pi.item_code',
+                'pi.item_name',
+                'cavity_number',
+                'product_weight',
+                'product_weight_uom',
+                'ca.is_active',
+                'ca.created_on',
+                'ca.created_by',
+                'ca.updated_on',
+                'ca.updated_by'	
+            )
+            ->leftJoin('precise.mold_hd as hd2','hd.remake_from','=','hd2.mold_hd_id')
+            ->leftJoin('precise.mold_dt as dt','hd.mold_hd_id','=','dt.mold_hd_id')
+            ->leftJoin('precise.mold_cavity as ca','dt.mold_dt_id','=','ca.mold_dt_id')
+            ->leftJoin('precise.workcenter as w','hd.workcenter_id','=','w.workcenter_id')
+            ->leftJoin('precise.customer as c','hd.customer_id','=','c.customer_id')
+            ->leftJoin('precise.mold_status as ms','hd.status_code','=','ms.status_code')
+            ->leftJoin('precise.product_item as pi','dt.item_id','=','pi.item_id')
+            ->get();
+
+            return response()->json(["data" => $this->mold]);
+    }
+
     public function showByWorkcenter($id){
         $this->mold = DB::table("precise.mold_hd as hd")
             ->where('hd.workcenter_id', $id)

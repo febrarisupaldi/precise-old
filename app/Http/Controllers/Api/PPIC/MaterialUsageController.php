@@ -414,10 +414,14 @@ class MaterialUsageController extends Controller
                 }
                 DB::table('precise.material_usage')
                 ->insert($dt); 
-                       
+               
+                $trans = DB::table('precise.material_usage')
+                ->where('trans_hd_id', $data['trans_hd_id'])
+                ->select('usage_id')
+                ->first();
                                 
                 DB::commit();
-                return response()->json(['status' => 'ok', 'message' => 'Material Usage have been updated'], 200);
+                return response()->json(['status' => 'ok', 'message' => $trans->usage_id], 200);
                 
             }
             catch(\Exception $e){

@@ -109,7 +109,9 @@ class MaterialUsageController extends Controller
             'dt.material_id',
             'p.product_code',
             'p.product_name',
-            'b.material_qty as bom_qty',
+            DB::raw(
+                "IFNULL(b.material_qty, 1) as bom_qty"
+            ),
             'dt.material_qty',
             'dt.material_uom',
             'dt.material_std_qty',

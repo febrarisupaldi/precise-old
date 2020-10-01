@@ -316,7 +316,7 @@ class MaterialUsageController extends Controller
                 DB::table('precise.warehouse_trans_dt')
                 ->where('trans_hd_id', $data['trans_hd_id'])
                 ->delete();
-        
+                
                 DB::table('precise.material_usage')
                 ->where('trans_hd_id', $data['trans_hd_id'])
                 ->delete();
@@ -361,8 +361,7 @@ class MaterialUsageController extends Controller
                 {
                     $PrdSeq = 1;
                 }
-                           
-                   
+                
                 foreach($data['detail'] as $transdt){
                     $whDt[] = [
                         'trans_hd_id'           => $data['trans_hd_id'],
@@ -380,7 +379,8 @@ class MaterialUsageController extends Controller
                         'trans_qty_price'       => 0.0000,
                         'trans_ppn_percent'     => 0.0000,
                         'trans_ppn_amount'      => 0.0000,
-                        'created_by'            => $data['created_by']
+                        'created_by'            => $data['updated_by'],
+                        'updated_by'            => $data['updated_by']
                     ];
                     $tran_Seq = $tran_Seq + 1;
                 }
@@ -407,12 +407,14 @@ class MaterialUsageController extends Controller
                     'InvtNmbr'              => $data['InvtNmbr'],
                     'InvtType'              => $data['InvtType'],
                     'trans_hd_id'           => $data['trans_hd_id'],
-                    'created_by'            => $data['created_by']
+                    'created_by'            => $data['updated_by'],
+                    'updated_by'            => $data['updated_by']
                     ];
                     $PrdSeq = $PrdSeq + 1;
                 }
                 DB::table('precise.material_usage')
-                ->insert($dt);               
+                ->insert($dt); 
+                       
                                 
                 DB::commit();
                 return response()->json(['status' => 'ok', 'message' => 'Material Usage have been updated'], 200);

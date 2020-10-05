@@ -103,11 +103,21 @@ class WorkOrderController extends Controller
                 'wo.product_id',
                 'p.product_code',
                 'p.product_name',
-                'wo.work_order_qty'
+                'wo.work_order_qty',
+                DB::raw(
+                    "wo.work_order_qty - IFNULL(pr.resultQty, 0) as outstanding_qty"
+                )
             )
             ->leftJoin('precise.product as p', 'wo.product_id', '=', 'p.product_id')
+            ->leftJoin(DB::raw('(SELECT prh.work_order_hd_id, SUM(prd.result_qty) AS resultQty
+            FROM precise.production_result_hd as prh
+            JOIN precise.production_result_dt as prd on prh.result_hd_id = prd.result_hd_id 
+            GROUP BY prh.work_order_hd_id) as pr'), 
+                function($join)
+                {
+                    $join->on('wo.work_order_hd_id', '=', 'pr.work_order_hd_id');
+                })
             ->get();
-
         return response()->json(["data" => $this->workOrder]);
     }
 

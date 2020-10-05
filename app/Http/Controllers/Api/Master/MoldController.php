@@ -12,8 +12,10 @@ class MoldController extends Controller
 {
     private $mold;
     public function index($id){
+        $workcenterIDs = explode('-', $id);
+
         $this->mold = DB::table("precise.mold_hd as hd")
-            ->where('hd.workcenter_id', $id)
+            ->whereIn('hd.workcenter_id', $workcenterIDs)
             ->select(
                 'hd.mold_hd_id',
                 'hd.mold_number',
@@ -27,6 +29,7 @@ class MoldController extends Controller
                     when 0 then 'Tidak'
                     end as is_family_mold"
                 ),
+                //'hd.is_family_mold',
                 'hd.customer_id',
                 'customer_code',
                 'customer_name',
@@ -34,8 +37,9 @@ class MoldController extends Controller
                 'status_description',
                 'hd.remake_from',
                 'hd.mold_description',
-                'hd2.mold_number',
-                'hd2.mold_name',
+                'hd2.mold_number as remake_from',
+                'hd2.mold_number as remake_from_number',
+                'hd2.mold_name as remake_from_name',
                 'hd.length',
                 'hd.width',
                 'hd.height',
@@ -45,6 +49,7 @@ class MoldController extends Controller
                 'hd.plate_size_length',
                 'hd.plate_size_width',
                 'hd.plate_size_uom',
+                'hd.is_active',
                 'hd.created_on',
                 'hd.created_by',
                 'hd.updated_on',
@@ -72,12 +77,13 @@ class MoldController extends Controller
                 'hd.workcenter_id',
                 'workcenter_code',
                 'workcenter_name',
-                DB::raw(
-                    "case hd.is_family_mold
-                    when 1 then 'Ya'
-                    when 0 then 'Tidak'
-                    end as is_family_mold"
-                ),
+                //DB::raw(
+                    //"case hd.is_family_mold
+                    //when 1 then 'Ya'
+                    //when 0 then 'Tidak'
+                    //end as is_family_mold"
+                //),
+                'hd.is_family_mold',
                 'hd.customer_id',
                 'customer_code',
                 'customer_name',
@@ -85,8 +91,8 @@ class MoldController extends Controller
                 'status_description',
                 'hd.remake_from',
                 'hd.mold_description',
-                'hd2.mold_number',
-                'hd2.mold_name',
+                'hd2.mold_number as remake_from_number',
+                'hd2.mold_name as remake_from_name',
                 'hd.length',
                 'hd.width',
                 'hd.height',
@@ -95,7 +101,8 @@ class MoldController extends Controller
                 'hd.weight_uom', 
                 'hd.plate_size_length',
                 'hd.plate_size_width',
-                'hd.plate_size_uom'
+                'hd.plate_size_uom',
+                'hd.is_active'
             )
             ->leftJoin('precise.workcenter as w','hd.workcenter_id','=','w.workcenter_id')
             ->leftJoin('precise.customer as c','hd.customer_id','=','c.customer_id')
@@ -109,16 +116,16 @@ class MoldController extends Controller
                 ->select(
                     'mold_dt_id',
                     'mold_hd_id', 
-                    'product_item_id',
+                    'dt.item_id',
                     'item_code',
                     'item_name'
                 )
-                ->leftJoin("precise.product_item as pi", "dt.product_item_id", "=", "pi.item_id")
+                ->leftJoin("precise.product_item as pi", "dt.item_id", "=", "pi.item_id")
                 ->get();
 
             foreach($detail as $details){
                 $cavity = DB::table('precise.mold_cavity as mc')
-                    ->where('md.mold_hd_id', $id)
+                    ->where('mc.mold_dt_id', $details->mold_dt_id)
                     ->select(
                         'mold_cavity_id',
                         'mc.mold_dt_id',
@@ -133,10 +140,10 @@ class MoldController extends Controller
                 $all[] = array(
                     "mold_dt_id"        => $details->mold_dt_id,
                     "mold_hd_id"        => $details->mold_hd_id,
-                    "product_item_id"   => $details->product_item_id,
+                    "item_id"   => $details->item_id,
                     "item_code"         => $details->item_code,
                     "item_name"         => $details->item_name,
-                    "detail_cavity"     => $cavity
+                    "cavity_detail"     => $cavity
                 );
             }
 
@@ -166,9 +173,65 @@ class MoldController extends Controller
                 'plate_size_length'  => $master->plate_size_length,
                 'plate_size_width'   => $master->plate_size_width,
                 'plate_size_uom'     => $master->plate_size_uom,
+                'is_active'          => $master->is_active,
                 'detail'             => $all
             );
         return response()->json($this->mold);
+    }
+
+    public function joined($id){
+        $workcenter = explode("-", $id);
+        $this->mold = DB::table('precise.mold_hd as hd')
+            ->whereIn('hd.workcenter_id', $workcenter)
+            ->select(
+                'hd.mold_hd_id',
+                'hd.mold_number',
+                'hd.mold_name',
+                'hd.workcenter_id',
+                'workcenter_code',
+                'workcenter_name',
+                'hd.is_family_mold',
+                'hd.customer_id',
+                'customer_code',
+                'customer_name',
+                'hd.status_code',
+                'status_description',
+                'hd.remake_from',
+                'hd2.mold_number',
+                'hd2.mold_name',
+                'hd.mold_description', 
+                'hd.length',
+                'hd.width',
+                'hd.height',
+                'hd.dimension_uom', 
+                'hd.weight',
+                'hd.weight_uom', 
+                'hd.plate_size_length',
+                'hd.plate_size_width',
+                'hd.plate_size_uom',
+                'hd.is_active',
+                'dt.item_id',
+                'pi.item_code',
+                'pi.item_name',
+                'cavity_number',
+                'product_weight',
+                'product_weight_uom',
+                'ca.is_active',
+                'ca.created_on',
+                'ca.created_by',
+                'ca.updated_on',
+                'ca.updated_by'	
+            )
+            ->leftJoin('precise.mold_hd as hd2','hd.remake_from','=','hd2.mold_hd_id')
+            ->leftJoin('precise.mold_dt as dt','hd.mold_hd_id','=','dt.mold_hd_id')
+            ->leftJoin('precise.mold_cavity as ca','dt.mold_dt_id','=','ca.mold_dt_id')
+            ->leftJoin('precise.workcenter as w','hd.workcenter_id','=','w.workcenter_id')
+            ->leftJoin('precise.customer as c','hd.customer_id','=','c.customer_id')
+            ->leftJoin('precise.mold_status as ms','hd.status_code','=','ms.status_code')
+            ->leftJoin('precise.product_item as pi','dt.item_id','=','pi.item_id')
+            ->get();
+
+            return response()->json(["data" => $this->mold]);
     }
 
     public function showByWorkcenter($id){
@@ -202,84 +265,80 @@ class MoldController extends Controller
 
     public function create(Request $request){
         $data = $request->json()->all();
+        //$detail = array();
         $validator = Validator::make(json_decode(json_encode($data),true),[
             'mold_number'       => 'required|unique:mold_hd,mold_number',
             'mold_name'         => 'required|unique:mold_hd,mold_name',
             'workcenter_id'     => 'required|exists:workcenter,workcenter_id',
             'is_family_mold'    => 'required|boolean',
-            'customer_id'       => 'required|exists:customer,customer_id',
-            'status_code'       => 'required|exists:mold_status,status_code',
+            //'customer_id'       => 'required|exists:customer,customer_id',
             'remake_from'       => 'nullable|exists:mold_hd,mold_hd_id',
-            'length'            => 'required|numeric',
-            'width'             => 'required|numeric',
-            'height'            => 'required|numeric',
-            'dimension_uom'     => 'required|exists:uom,uom_code',
-            'weight'            => 'required|numeric',
-            'weight_uom'        => 'required|exists:uom,uom_code',
-            'plate_size_length' => 'required|numeric',
-            'plate_size_width'  => 'required|numeric',
-            'plate_size_uom'    => 'required|exists:uom,uom_code',
+            //'length'            => 'required|numeric',
+            //'width'             => 'required|numeric',
+            //'height'            => 'required|numeric',
+            //'dimension_uom'     => 'required|exists:uom,uom_code',
+            //'weight'            => 'required|numeric',
+            //'weight_uom'        => 'required|exists:uom,uom_code',
+            //'plate_size_length' => 'required|numeric',
+            //'plate_size_width'  => 'required|numeric',
+            //'plate_size_uom'    => 'required|exists:uom,uom_code',
             'created_by'        => 'required',
             'detail'            => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
-            try{
+            try
+            {
                 DB::beginTransaction();
                 $id_hd = DB::table('precise.mold_hd')
                     ->insertGetId([
-                        'mold_number'       =>$request->mold_number,
-                        'mold_name'         =>$request->mold_name,
-                        'workcenter_id'     =>$request->workcenter_id,
-                        'is_family_mold'    =>$request->is_family_mold,
-                        'customer_id'       =>$request->customer_id,
-                        'status_code'       =>$request->status_code,
-                        'remake_from'       =>$request->remake_from,
-                        'mold_description'  =>$request->mold_description,
-                        'length'            =>$request->length,
-                        'width'             =>$request->width,
-                        'height'            =>$request->height,
-                        'dimension_uom'     =>$request->dimension_uom,
-                        'weight'            =>$request->weight,
-                        'weight_uom'        =>$request->weight_uom,
-                        'plate_size_length' =>$request->plate_size_length,
-                        'plate_size_width'  =>$request->plate_size_length,
-                        'plate_size_uom'    =>$request->plate_size_uom,
-                        'created_by'        =>$request->created_by
+                        'mold_number'       =>$data['mold_number'],
+                        'mold_name'         =>$data['mold_name'],
+                        'workcenter_id'     =>$data['workcenter_id'],
+                        'is_family_mold'    =>$data['is_family_mold'],
+                        'customer_id'       =>$data['customer_id'],
+                        'remake_from'       =>$data['remake_from'],
+                        'mold_description'  =>$data['mold_description'],
+                        'length'            =>$data['length'],
+                        'width'             =>$data['width'],
+                        'height'            =>$data['height'],
+                        'dimension_uom'     =>$data['dimension_uom'],
+                        'weight'            =>$data['weight'],
+                        'weight_uom'        =>$data['weight_uom'],
+                        'plate_size_length' =>$data['plate_size_length'],
+                        'plate_size_width'  =>$data['plate_size_length'],
+                        'plate_size_uom'    =>$data['plate_size_uom'],
+                        'created_by'        =>$data['created_by']
                 ]);
 
-                
-                $validator = Validator::make(json_decode(json_encode($data['detail']),true),[
-                    'product_item_id'   =>'required|exists:product_item,item_id',
-                    'created_by'        =>'required',
-                    'detail_cavity'     =>'required'
-                ]);
+                foreach($data['detail'] as $d){
+                    $validator = Validator::make(json_decode(json_encode($d),true),[
+                        'item_id'   =>'required|exists:product_item,item_id',
+                        'created_by'        =>'required',
+                        'cavity_detail'     =>'required'
+                    ]);
 
-                if ($validator->fails()) {
-                    return response()->json(['status' => 'error', 'message' => $validator->errors()]);
-                } else {
-                    $detail = array();
-                    foreach($data['detail'] as $d){
+                    if ($validator->fails()) {
+                        return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                    } else {
                         $id_dt = DB::table('precise.mold_dt')->insertGetId([
                             'mold_hd_id'        => $id_hd,
-                            'product_item_id'   => $d['product_item_id'],
+                            'item_id'           => $d['item_id'],
                             'created_by'        => $d['created_by']
                         ]);
+                        foreach($d['cavity_detail'] as $dc){
+                            $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                'cavity_number'     =>'required',
+                                'product_weight'    =>'required|numeric',
+                                'product_weight_uom'=>'required|exists:uom,uom_code',
+                                'is_active'         =>'required|boolean',
+                                'created_by'        =>'required'
+                            ]);
 
-                        $validator = Validator::make(json_decode(json_encode($data['detail']['detail_cavity']),true),[
-                            'cavity_number'     =>'required',
-                            'product_weight'    =>'required|numeric',
-                            'product_weight_uom'=>'required|exists:uom,uom_code',
-                            'is_active'         =>'required|boolean',
-                            'created_by'        =>'required'
-                        ]);
-
-                        if ($validator->fails()) {
-                            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
-                        } else {
-                            $detail[] = null;
-                            foreach($data['detail']['detail_cavity'] as $dc){
+                            if ($validator->fails()) {
+                                return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+                            } else {
                                 $detail = [
                                     'mold_dt_id'        =>$id_dt,
                                     'cavity_number'     =>$dc['cavity_number'],
@@ -288,10 +347,10 @@ class MoldController extends Controller
                                     'is_active'         =>$dc['is_active'],
                                     'created_by'        =>$dc['created_by']
                                 ];
-                            }
 
-                            DB::table('precise.cavity_number')
-                            ->insert($detail);
+                                DB::table('precise.mold_cavity')
+                                ->insert($detail);
+                            }
                         }
                     }
                 }
@@ -303,9 +362,10 @@ class MoldController extends Controller
 
                 DB::commit();
                 return response()->json(['status' => 'ok', 'message' => $trans->mold_number]);
-            }catch(\Exception $e){
+            }
+            catch(\Exception $e){
                 DB::rollBack();
-                return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+                return response()->json(['status' => 'error3', 'message' => $e->getMessage()]);
             }
         }
     }
@@ -318,20 +378,20 @@ class MoldController extends Controller
             'mold_name'         => 'required|unique:mold_hd,mold_name',
             'workcenter_id'     => 'required|exists:workcenter,workcenter_id',
             'is_family_mold'    => 'required|boolean',
-            'customer_id'       => 'required|exists:customer,customer_id',
-            'status_code'       => 'required|exists:mold_status,status_code',
+            //'customer_id'       => 'required|exists:customer,customer_id',
+            //status_code'       => 'required|exists:mold_status,status_code',
             'remake_from'       => 'nullable|exists:mold_hd,mold_hd_id',
-            'length'            => 'required|numeric',
-            'width'             => 'required|numeric',
-            'height'            => 'required|numeric',
-            'dimension_uom'     => 'required|exists:uom,uom_code',
-            'weight'            => 'required|numeric',
-            'weight_uom'        => 'required|exists:uom,uom_code',
-            'plate_size_length' => 'required|numeric',
-            'plate_size_width'  => 'required|numeric',
-            'plate_size_uom'    => 'required|exists:uom,uom_code',
+            //'length'            => 'required|numeric',
+            //'width'             => 'required|numeric',
+            //'height'            => 'required|numeric',
+            //'dimension_uom'     => 'required|exists:uom,uom_code',
+            //'weight'            => 'required|numeric',
+            //'weight_uom'        => 'required|exists:uom,uom_code',
+            //'plate_size_length' => 'required|numeric',
+            //'plate_size_width'  => 'required|numeric',
+            //'plate_size_uom'    => 'required|exists:uom,uom_code',
             'updated_by'        => 'required',
-            'detail'            => 'required'
+            //'detail'            => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
@@ -362,19 +422,137 @@ class MoldController extends Controller
                         'updated_by'        =>$data['updated_by']
                     ]);
                 
-                if($data['inserted_detail'] != null)
+                if($data['inserted'] != null)
                 {
-                    foreach($data['inserted_detail'] as $d)
+                    foreach($data['inserted'] as $d)
                     {
-                        $dt[] = [
-                            'mold_hd_id'        => $data['mold_hd_id'],
-                            'product_item_id'   => $d['product_item_id'],
-                            'created_by'        => $d['created_by']
-                        ];
+                        $validator = Validator::make(json_decode(json_encode($d),true),[
+                            'item_id'       =>'required|exists:product_item,item_id',
+                            'created_by'    =>'required',
+                            'cavity_added'  =>'required'
+                        ]);
+                        if ($validator->fails()) {
+                            return response()->json(['status' => 'error1', 'message' => $validator->errors()]);
+                        } else {
+                            $id_dt = DB::table('precise.mold_dt')->insertGetId([
+                                'mold_hd_id'        => $data['mold_hd_id'],
+                                'item_id'           => $d['item_id'],
+                                'created_by'        => $d['created_by']
+                            ]);
+
+                            foreach($d['cavity_added'] as $dc){
+                                $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                    'cavity_number'     =>'required',
+                                    'product_weight'    =>'required|numeric',
+                                    'product_weight_uom'=>'required|exists:uom,uom_code',
+                                    'is_active'         =>'required|boolean',
+                                    'created_by'        =>'required'
+                                ]);
+    
+                                if ($validator->fails()) {
+                                    return response()->json(['status' => 'error2', 'message' => $validator->errors()]);
+                                } else {
+                                    $detail_cavity = [
+                                        'mold_dt_id'        =>$id_dt,
+                                        'cavity_number'     =>$dc['cavity_number'],
+                                        'product_weight'    =>$dc['product_weight'],
+                                        'product_weight_uom'=>$dc['product_weight_uom'],
+                                        'is_active'         =>$dc['is_active'],
+                                        'created_by'        =>$dc['created_by']
+                                    ];
+
+                                    DB::table('precise.mold_cavity')
+                                    ->insert($detail_cavity);
+                                }
+                            }
+                        }  
                     }
-                    DB::table('precise.material_customer_dt')
-                    ->insert($dt);
                 }
+
+                if($data['updated'] != null)
+                {
+                    foreach($data['updated'] as $d)
+                    {
+                        $validator = Validator::make(json_decode(json_encode($d),true),[
+                            'mold_dt_id'        =>'required|exists:mold_dt,mold_dt_id',
+                            'mold_hd_id'        =>'required|exists:mold_hd,mold_hd_id',
+                            'item_id'           =>'required|exists:product_item,item_id',
+                            'updated_by'        =>'required'
+                        ]);
+
+                        if ($validator->fails()) {
+                            return response()->json(['status' => 'error3', 'message' => $validator->errors()]);
+                        } else {
+                            DB::table('precise.mold_dt')
+                            ->where('mold_dt_id', $d['mold_dt_id'])
+                            ->update([
+                                'mold_hd_id'    =>$d['mold_hd_id'],
+                                'item_id'       =>$d['item_id'],
+                                'updated_by'    =>$d['updated_by']
+                            ]);
+
+                            if($d['cavity_inserted'] != null){
+                                foreach($d['cavity_inserted'] as $dc){
+                                    $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                        'mold_dt_id'        =>'required|exists:mold_dt,mold_dt_id',
+                                        'cavity_number'     =>'required',
+                                        'product_weight'    =>'required|numeric',
+                                        'product_weight_uom'=>'required|exists:uom,uom_code',
+                                        'is_active'         =>'required|boolean',
+                                        'created_by'        =>'required'
+                                    ]);
+
+                                    if ($validator->fails()) {
+                                        return response()->json(['status' => 'error4', 'message' => $validator->errors()]);
+                                    } else {
+                                        $detail = [
+                                            'mold_dt_id'        =>$d['mold_dt_id'],
+                                            'cavity_number'     =>$dc['cavity_number'],
+                                            'product_weight'    =>$dc['product_weight'],
+                                            'product_weight_uom'=>$dc['product_weight_uom'],
+                                            'is_active'         =>$dc['is_active'],
+                                            'created_by'        =>$dc['created_by']
+                                        ];
+
+                                        DB::table('precise.mold_cavity')
+                                        ->insert($detail);
+                                    }
+                                }
+                            }
+
+                            if($d['cavity_updated'] != null){
+                                foreach($d['cavity_updated'] as $dc){
+                                    $validator = Validator::make(json_decode(json_encode($dc),true),[
+                                        'mold_cavity_id'    =>'required|exists:mold_cavity,mold_cavity_id',
+                                        'mold_dt_id'        =>'required|exists:mold_dt,mold_dt_id',
+                                        'cavity_number'     =>'required',
+                                        'product_weight'    =>'required|numeric',
+                                        'product_weight_uom'=>'required|exists:uom,uom_code',
+                                        'is_active'         =>'required|boolean',
+                                        'updated_by'        =>'required'
+                                    ]);
+
+                                    if ($validator->fails()) {
+                                        return response()->json(['status' => 'error5', 'message' => $validator->errors()]);
+                                    } else {
+                                        DB::table('precise.mold_cavity')
+                                        ->where('mold_cavity_id', $dc['mold_cavity_id'])
+                                        ->update([
+                                            'mold_dt_id'        =>$dc['mold_dt_id'],
+                                            'cavity_number'     =>$dc['cavity_number'],
+                                            'product_weight'    =>$dc['product_weight'],
+                                            'product_weight_uom'=>$dc['product_weight_uom'],
+                                            'is_active'         =>$dc['is_active'],
+                                            'updated_by'        =>$dc['updated_by']
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                DB::commit();
+                return response()->json(['status' => 'ok', 'message' => 'Mold have been updated']);
             }catch(\Exception $e){
                 DB::rollBack();
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
@@ -393,9 +571,13 @@ class MoldController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
             if ($type == "number") {
-                $this->mold = DB::table('mold_hd')->where('mold_number', $value)->count();
+                $this->mold = DB::table('mold_hd')
+                    ->where('mold_number', $value)
+                    ->count();
             }else if($type == "name"){
-                $this->mold = DB::table('mold_hd')->where('mold_name', $value)->count();
+                $this->mold = DB::table('mold_hd')
+                    ->where('mold_name', $value)
+                    ->count();
             }
 
             return response()->json(['status' => 'ok', 'message' => $this->mold]);

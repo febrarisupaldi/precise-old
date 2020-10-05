@@ -46,17 +46,18 @@ Route::group(
                 Route::get('bank', 'Api\Master\BankController@index');
 
                 //BOM
+                Route::get('bom', 'Api\Master\BOMController@showBOMHd');
                 Route::get('bom/check', 'Api\Master\BOMController@check');
-                Route::get('bom/{id}', 'Api\Master\BOMController@show');
+                Route::get('bom/usage_priority/{id}', 'Api\Master\BOMController@showByProductGetTopUsagePriority');
                 Route::get('bom/product/{id}', 'Api\Master\BOMController@showByProduct');
                 Route::get('bom/workcenter/{id}', 'Api\Master\BOMController@showByWorkcenter');
                 Route::get('bom/full/{id}', 'Api\Master\BOMController@joined');
+                Route::get('bom/search/{id}', 'Api\Master\BOMController@showBOMForSearch');
+                Route::get('bom/{id}', 'Api\Master\BOMController@show');
                 Route::post('bom', 'Api\Master\BOMController@create');
                 Route::put('bom/detail', 'Api\Master\BOMController@update');
                 Route::delete('bom/{id}', 'Api\Master\BOMController@destroy');
-                Route::get('bom/usage_priority/{id}', 'Api\Master\BOMController@showByProductGetTopUsagePriority');
-                Route::get('bom', 'Api\Master\BOMController@showBOMHd');
-                Route::get('bom/search/{id}', 'Api\Master\BOMController@showBOMForSearch');
+               
                                 
                 //city
                 Route::get('city', 'Api\Master\CityController@index');
@@ -141,6 +142,13 @@ Route::group(
                 Route::post('machine', 'Api\Master\MachineController@create');
                 Route::put('machine', 'Api\Master\MachineController@update');
 
+                //Machine Status
+                Route::get('machine_status','Api\Master\MachineStatusController@index');
+                Route::get('machine_status/check', 'Api\Master\MachineStatusController@check');
+                Route::get('machine_status/{id}', 'Api\Master\MachineStatusController@show');
+                Route::post('machine_status', 'Api\Master\MachineStatusController@create');
+                Route::put('machine_status', 'Api\Master\MachineStatusController@update');
+
                 //menu
                 Route::get('menu', 'Api\Master\MenuController@index');
                 Route::get('menu/check', 'Api\Master\MenuController@check');
@@ -148,13 +156,15 @@ Route::group(
                 Route::post('menu', 'Api\Master\MenuController@create');
                 Route::put('menu', 'Api\Master\MenuController@update');
                 Route::delete('menu/{id}', 'Api\Master\MenuController@destroy');
-
-                // //Mold
-                // Route::get('mold/check','Api\Master\MoldController@check');
-                // Route::get('mold/product_item/{id}','Api\Master\MoldController@showByProductItem');
-                // Route::get('mold/workcenter/{id}','Api\Master\MoldController@index');
-                // Route::get('mold/{id}','Api\Master\MoldController@show');
-                // Route::post('mold','Api\Master\MoldController@create');
+                
+                //Mold
+                Route::get('mold/check','Api\Master\MoldController@check');
+                Route::get('mold/product_item/{id}','Api\Master\MoldController@showByProductItem');
+                Route::get('mold/workcenter/full/{id}','Api\Master\MoldController@joined');
+                Route::get('mold/workcenter/{id}','Api\Master\MoldController@index');
+                Route::get('mold/{id}','Api\Master\MoldController@show');
+                Route::post('mold','Api\Master\MoldController@create');
+                Route::post('mold/detail', 'Api\Master\MoldController@update');
 
                 //Mold Status
                 Route::get('mold_status','Api\Master\MoldStatusController@index');
@@ -408,6 +418,11 @@ Route::group(
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
                 Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
                 
+                Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
+                Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');
+                Route::post('material_usage', 'Api\PPIC\MaterialUsageController@create');
+                Route::put('material_usage/detail', 'Api\PPIC\MaterialUsageController@update');
+                Route::delete('material_usage/{id}', 'Api\PPIC\MaterialUsageController@destroy');
             }
         );
 

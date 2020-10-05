@@ -59,6 +59,16 @@ class WorkOrderController extends Controller
     }
 
     public function show($id){
+        $sub = DB::table('precise.production_result_hd as prh')
+        ->leftJoin('precise.production_result_dt as prd','prh.result_hd_id','=','prd.result_hd_id')
+        ->where("prh.work_order_hd_id", $id)
+        ->select(
+            'prh.work_order_hd_id',
+            DB::raw(
+                "SUM(prd.result_qty) AS resultQty")
+        )
+        ->groupBy('prh.work_order_hd_id');
+
         $this->workOrder = DB::table("precise.work_order as wo")
             ->where("wo.work_order_hd_id", $id)
             ->select(
@@ -83,22 +93,18 @@ class WorkOrderController extends Controller
                 'wt.type_description',
                 'ws.status_description',
                 DB::raw(
-                    'wo.work_order_qty - IFNULL(pr.resultQty, 0) as outstanding_qty'
-                )
+                    'wo.work_order_qty - IFNULL(prodres.resultQty, 0) as outstanding_qty'
+                ),
             )
             ->leftJoin("precise.product as p","wo.product_id","=","p.product_id")
             ->leftJoin("precise.workcenter as w","wo.workcenter_id","=","w.workcenter_id")
             ->leftJoin("precise.bom_hd as bom","wo.bom_default","=","bom.bom_hd_id")
             ->leftJoin("precise.work_order_type as wt","wo.work_order_type","=","wt.work_order_type_code")
             ->leftJoin("precise.work_order_status as ws","wo.work_order_status","=","ws.work_order_status_code")
-            ->leftJoin(DB::raw("(SELECT prh.work_order_hd_id, SUM(prd.result_qty) AS resultQty
-            FROM precise.production_result_hd as prh
-            JOIN precise.production_result_dt as prd on prh.result_hd_id = prd.result_hd_id 
-            GROUP BY prh.work_order_hd_id) as pr"), 
-                function($join)
-                {
-                    $join->on("wo.work_order_hd_id", "=", "pr.work_order_hd_id");
-                })
+            ->mergeBindings($sub)
+            ->leftJoin(DB::raw("({$sub->toSql()})prodres"), function($join){
+                $join->on('wo.work_order_hd_id', '=', 'prodres.work_order_hd_id');
+            })
             ->first();
         
         return response()->json($this->workOrder);

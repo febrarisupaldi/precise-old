@@ -106,6 +106,22 @@ Route::group(
                 Route::post('customer_group_member', 'Api\Master\CustomerGroupMemberController@create');
                 Route::delete('customer_group_member/{id}', 'Api\Master\CustomerGroupMemberController@destroy');
                 Route::get('customer_group_member/check', 'Api\Master\CustomerGroupMemberController@check');
+                
+                //Downtime
+                Route::get('downtime', 'Api\Master\DowntimeController@index');
+                Route::get('downtime/check', 'Api\Master\DowntimeController@check');
+                Route::get('downtime/{id}', 'Api\Master\DowntimeController@show');
+                Route::post('downtime', 'Api\Master\DowntimeController@create');
+                Route::put('downtime', 'Api\Master\DowntimeController@update');
+                Route::delete('downtime/{id}','Api\Master\DowntimeController@destroy');
+
+                //Downtime Group
+                Route::get('downtime_group', 'Api\Master\DowntimeGroupController@index');
+                Route::get('downtime_group/check', 'Api\Master\DowntimeGroupController@check');
+                Route::get('downtime_group/{id}', 'Api\Master\DowntimeGroupController@show');
+                Route::post('downtime_group', 'Api\Master\DowntimeGroupController@create');
+                Route::put('downtime_group', 'Api\Master\DowntimeGroupController@update');
+                Route::delete('downtime_group/{id}','Api\Master\DowntimeGroupController@destroy');
 
                 //Driving License
                 Route::get('department', 'Api\Master\DepartmentController@index');
@@ -275,6 +291,22 @@ Route::group(
                 Route::post('product_workcenter', 'Api\Master\ProductWorkcenterController@create');
                 Route::put('product_workcenter', 'Api\Master\ProductWorkcenterController@update');
                 Route::delete('product_workcenter/{id}', 'Api\Master\ProductWorkcenterController@destroy');
+                
+                //Reject
+                Route::get('reject', 'Api\Master\RejectController@index');
+                Route::get('reject/check', 'Api\Master\RejectController@check');
+                Route::get('reject/{id}', 'Api\Master\RejectController@show');
+                Route::post('reject', 'Api\Master\RejectController@create');
+                Route::put('reject', 'Api\Master\RejectController@update');
+                Route::delete('reject/{id}','Api\Master\RejectController@destroy');
+
+                 //Reject
+                 Route::get('reject_group', 'Api\Master\RejectGroupController@index');
+                 Route::get('reject_group/check', 'Api\Master\RejectGroupController@check');
+                 Route::get('reject_group/{id}', 'Api\Master\RejectGroupController@show');
+                 Route::post('reject_group', 'Api\Master\RejectGroupController@create');
+                 Route::put('reject_group', 'Api\Master\RejectGroupController@update');
+                 Route::delete('reject_group/{id}','Api\Master\RejectGroupController@destroy');
 
                 //Religion
                 Route::get('religion', 'Api\Master\ReligionController@index');

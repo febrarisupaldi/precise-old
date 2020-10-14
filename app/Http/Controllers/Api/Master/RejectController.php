@@ -179,7 +179,7 @@ class RejectController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
             if ($type == "code") {
-                $this->downtime = DB::table('precise.reject')
+                $this->reject = DB::table('precise.reject')
                     ->where('reject_code', $value)
                     ->count();
             }

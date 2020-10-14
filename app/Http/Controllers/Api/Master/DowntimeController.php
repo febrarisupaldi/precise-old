@@ -32,8 +32,16 @@ class DowntimeController extends Controller
                     'g.downtime_group_code',
                     'g.downtime_group_name',
                     'a.std_duration',
-                    'a.is_planned',
-                    'a.is_need_approval',
+                    DB::raw("
+                        case a.is_planned 
+                            when 0 then 'Tidak aktif'
+                            when 1 then 'Aktif' 
+                        end as 'is_planned',
+                        case a.is_need_approval 
+                            when 0 then 'Tidak aktif'
+                            when 1 then 'Aktif' 
+                        end as 'is_need_approval'
+                    "),
                     'a.to_be_added1',
                     'a.to_be_added2',
                     'a.created_on',

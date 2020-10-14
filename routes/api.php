@@ -81,6 +81,13 @@ Route::group(
                 Route::post('company_type', 'Api\Master\CompanyTypeController@create');
                 Route::put('company_type', 'Api\Master\CompanyTypeController@update');
 
+                //Cooling Method
+                Route::get('cooling_method', 'Api\Master\CoolingMethodController@index');
+                Route::get('cooling_method/check', 'Api\Master\CoolingMethodController@check');
+                Route::get('cooling_method/{id}', 'Api\Master\CoolingMethodController@show');
+                Route::post('cooling_method', 'Api\Master\CoolingMethodController@create');
+                Route::put('cooling_method', 'Api\Master\CoolingMethodController@update');
+
                 //country
                 Route::get('country', 'Api\Master\CountryController@index');
                 Route::get('country/check', 'Api\Master\CountryController@check');
@@ -164,6 +171,13 @@ Route::group(
                 Route::get('machine_status/{id}', 'Api\Master\MachineStatusController@show');
                 Route::post('machine_status', 'Api\Master\MachineStatusController@create');
                 Route::put('machine_status', 'Api\Master\MachineStatusController@update');
+
+                //Machine Tonnage
+                Route::get('machine_tonnage', 'Api\Master\MachineTonnageController@index');
+                Route::get('machine_tonnage/check', 'Api\Master\MachineTonnageController@check');
+                Route::get('machine_tonnage/{id}', 'Api\Master\MachineTonnageController@show');
+                Route::post('machine_tonnage', 'Api\Master\MachineTonnageController@create');
+                Route::put('machine_tonnage', 'Api\Master\MachineTonnageController@update');
 
                 //menu
                 Route::get('menu', 'Api\Master\MenuController@index');
@@ -300,13 +314,13 @@ Route::group(
                 Route::put('reject', 'Api\Master\RejectController@update');
                 Route::delete('reject/{id}','Api\Master\RejectController@destroy');
 
-                 //Reject
-                 Route::get('reject_group', 'Api\Master\RejectGroupController@index');
-                 Route::get('reject_group/check', 'Api\Master\RejectGroupController@check');
-                 Route::get('reject_group/{id}', 'Api\Master\RejectGroupController@show');
-                 Route::post('reject_group', 'Api\Master\RejectGroupController@create');
-                 Route::put('reject_group', 'Api\Master\RejectGroupController@update');
-                 Route::delete('reject_group/{id}','Api\Master\RejectGroupController@destroy');
+                //Reject
+                Route::get('reject_group', 'Api\Master\RejectGroupController@index');
+                Route::get('reject_group/check', 'Api\Master\RejectGroupController@check');
+                Route::get('reject_group/{id}', 'Api\Master\RejectGroupController@show');
+                Route::post('reject_group', 'Api\Master\RejectGroupController@create');
+                Route::put('reject_group', 'Api\Master\RejectGroupController@update');
+                Route::delete('reject_group/{id}','Api\Master\RejectGroupController@destroy');
 
                 //Religion
                 Route::get('religion', 'Api\Master\ReligionController@index');
@@ -330,6 +344,13 @@ Route::group(
                 Route::get('state/{id}', 'Api\Master\StateController@show')->where('id', '[0-9]+');
                 Route::post('state', 'Api\Master\StateController@create');
                 Route::put('state', 'Api\Master\StateController@update');
+
+                //Steel Type
+                Route::get('steel_type', 'Api\Master\SteelTypeController@index');
+                Route::get('steel_type/check', 'Api\Master\SteelTypeController@check');
+                Route::get('steel_type/{id}', 'Api\Master\SteelTypeController@show');
+                Route::post('steel_type', 'Api\Master\SteelTypeController@create');
+                Route::put('steel_type', 'Api\Master\SteelTypeController@update');
 
                 //Technical Standard
                 Route::get('technical_standard', 'Api\Master\TechnicalStandardController@index');

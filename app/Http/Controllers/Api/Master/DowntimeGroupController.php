@@ -44,7 +44,7 @@ class DowntimeGroupController extends Controller
                 'a.updated_on',
                 'a.updated_by' 
             )
-            ->get();
+            ->first();
 
         
         return response()->json($this->downtimeGroup,200);
@@ -64,7 +64,7 @@ class DowntimeGroupController extends Controller
                 ->insert([
                     'downtime_group_code'       => $request->downtime_group_code,
                     'downtime_group_name'       => $request->downtime_group_name,
-                    'downtime_group_description'=> $request->desc,
+                    'downtime_group_description'=> $request->downtime_group_description,
                     'created_by'                => $request->created_by
                 ]);
 
@@ -97,7 +97,7 @@ class DowntimeGroupController extends Controller
                     ->update([
                         'downtime_group_code'       => $request->downtime_group_code,
                         'downtime_group_name'       => $request->downtime_group_name,
-                        'downtime_group_description'=> $request->desc,
+                        'downtime_group_description'=> $request->downtime_group_description,
                         'updated_by'                => $request->updated_by
                     ]);
 

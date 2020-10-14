@@ -43,7 +43,7 @@ class RejectGroupController extends Controller
                 'a.updated_on',
                 'a.updated_by' 
             )
-            ->get();
+            ->first();
 
         return response()->json($this->rejectGroup, 200);
     }
@@ -62,7 +62,7 @@ class RejectGroupController extends Controller
                 ->insert([
                     'reject_group_code'         => $request->reject_group_code,
                     'reject_group_name'         => $request->reject_group_name,
-                    'reject_group_description'  => $request->desc,
+                    'reject_group_description'  => $request->reject_group_description,
                     'created_by'                => $request->created_by
                 ]);
             
@@ -96,7 +96,7 @@ class RejectGroupController extends Controller
                     ->update([
                         'reject_group_code'         => $request->reject_group_code,
                         'reject_group_name'         => $request->reject_group_name,
-                        'reject_group_description'  => $request->desc,
+                        'reject_group_description'  => $request->reject_group_description,
                         'updated_by'                => $request->updated_by
                     ]);
                 

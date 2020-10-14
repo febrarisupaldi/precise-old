@@ -65,7 +65,7 @@ class RejectController extends Controller
             )
             ->leftJoin('precise.reject_group as r','a.reject_group_id','=','r.reject_group_id')
             ->leftJoin('precise.workcenter as w','a.workcenter_id','=','w.workcenter_id')
-            ->get();
+            ->first();
                 
         return response()->json($this->reject, 200);
     }
@@ -86,7 +86,7 @@ class RejectController extends Controller
                 ->insert([
                     'reject_code'         => $request->reject_code,
                     'reject_name'         => $request->reject_name,
-                    'reject_description'  => $request->desc,
+                    'reject_description'  => $request->reject_description,
                     'reject_group_id'     => $request->reject_group_id,
                     'workcenter_id'       => $request->workcenter_id,
                     'created_by'          => $request->created_by
@@ -123,7 +123,7 @@ class RejectController extends Controller
                     ->update([
                         'reject_code'         => $request->reject_code,
                         'reject_name'         => $request->reject_name,
-                        'reject_description'  => $request->desc,
+                        'reject_description'  => $request->reject_description,
                         'reject_group_id'     => $request->reject_group_id,
                         'workcenter_id'       => $request->workcenter_id,
                         'updated_by'          => $request->updated_by

@@ -101,8 +101,10 @@ class RejectGroupController extends Controller
                     ]);
                 
                 if ($this->rejectGroup == 0) {
+                    DB::rollback();
                     return response()->json(['status' => 'error', 'message' => 'Failed to update reject group, Contact your administrator']);
                 } else {
+                    DB::commit();
                     return response()->json(['status' => 'ok', 'message' =>'Reject group has been updated']);
                 }
             }catch(\Exception $e){

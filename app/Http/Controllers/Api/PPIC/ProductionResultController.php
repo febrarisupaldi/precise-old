@@ -67,6 +67,7 @@ class ProductionResultController extends Controller
                 'wh.warehouse_id',
                 'wh.warehouse_code',
                 'wh.warehouse_name',
+                'wht.trans_description',
                 'pr.created_on',
                 'pr.created_by',
                 'pr.updated_on',
@@ -76,6 +77,7 @@ class ProductionResultController extends Controller
             ->leftJoin('precise.warehouse as wh','prd.result_warehouse','=','wh.warehouse_id')
             ->leftJoin('precise.work_order as wo', 'pr.work_order_hd_id','=','wo.work_order_hd_id')
             ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
+            ->leftJoin('precise.warehouse_trans_hd as wht','prd.trans_hd_id','=','wht.trans_hd_id')
             ->first();
 
         $detail = DB::table('precise.production_result_dt as dt')
@@ -118,6 +120,7 @@ class ProductionResultController extends Controller
             "workcenter_code"     => $master->workcenter_code,
             "workcenter_name"     => $master->workcenter_name,
             "ResultSeq"           => $master->ResultSeq,
+            "trans_description"   => $master->trans_description,
             "created_on"          => $master->created_on,
             "created_by"          => $master->created_by,
             "updated_on"          => $master->updated_on,
@@ -168,6 +171,7 @@ class ProductionResultController extends Controller
                     'trans_from'         => $data['warehouse_id'],
                     'work_order_id'      => $data['work_order_hd_id'],
                     'work_order_number'  => $data['PrdNumber'],
+                    'trans_description'  => $data['trans_description'],
                     'created_by'         => $data['created_by']
                 ]);
 
@@ -284,6 +288,7 @@ class ProductionResultController extends Controller
                         'trans_from'         => $data['warehouse_id'],
                         'work_order_id'      => $data['work_order_hd_id'],
                         'work_order_number'  => $data['PrdNumber'],
+                        'trans_description'  => $data['trans_description'],
                         'updated_by'         => $data['updated_by']
                     ]);
     

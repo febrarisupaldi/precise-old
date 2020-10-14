@@ -76,7 +76,7 @@ class DowntimeController extends Controller
             )
             ->leftJoin('precise.downtime_group as g','a.downtime_group_id','=','g.downtime_group_id')
             ->leftJoin('precise.workcenter as w','a.workcenter_id','=','w.workcenter_id')
-            ->get();
+            ->first();
 
         return response()->json($this->downtime, 200);
     }
@@ -101,7 +101,7 @@ class DowntimeController extends Controller
                 ->insert([
                     'downtime_code'         => $request->downtime_code,
                     'downtime_name'         => $request->downtime_name,
-                    'downtime_description'  => $request->desc,
+                    'downtime_description'  => $request->downtime_description,
                     'downtime_group_id'     => $request->downtime_group_id,
                     'workcenter_id'         => $request->workcenter_id,
                     'std_duration'          => $request->std_duration,
@@ -146,7 +146,7 @@ class DowntimeController extends Controller
                     ->update([
                         'downtime_code'         => $request->downtime_code,
                         'downtime_name'         => $request->downtime_name,
-                        'downtime_description'  => $request->desc,
+                        'downtime_description'  => $request->downtime_description,
                         'downtime_group_id'     => $request->downtime_group_id,
                         'workcenter_id'         => $request->workcenter_id,
                         'std_duration'          => $request->std_duration,

@@ -38,11 +38,13 @@ class ProductionResultController extends Controller
                     'pr.work_order_hd_id',
                     'pr.PrdNumber', 
                     'pr.ResultSeq',
+                    'prd.InvtNmbr',
                     'pr.created_on',
                     'pr.created_by',
                     'pr.updated_on',
                     'pr.updated_by'
                 )
+                ->leftJoin('precise.production_result_dt as prd','pr.result_hd_id','=','prd.result_hd_id')
                 ->leftJoin('precise.work_order as wo','pr.work_order_hd_id','=','wo.work_order_hd_id')
                 ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
                 ->get();

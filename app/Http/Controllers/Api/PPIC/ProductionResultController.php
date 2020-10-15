@@ -327,8 +327,6 @@ class ProductionResultController extends Controller
                     $resSeq = $data['ResultSeq'];
                 }
                 
-
-
                 DB::table('precise.production_result_hd')
                 ->where('result_hd_id',$data['result_hd_id'])
                 ->update([
@@ -339,63 +337,25 @@ class ProductionResultController extends Controller
                     'ResultSeq'           => $resSeq,
                     'updated_by'          => $data['updated_by']
                 ]);
-
-                if($data['inserted'] != null)
+                foreach($data['detail'] as $d)
                 {
-                    foreach($data['inserted'] as $d)
-                    {
-                        $dt[] = [
-                            'result_hd_id'          => $d['result_hd_id'],
-                            'PrdNumber'             => $d['PrdNumber'],
-                            'ResultSeq'             => $resSeq,
-                            'ProductCode'           => $d['product_code'],
-                            'product_id'            => $d['product_id'],
-                            'result_qty'            => $d['result_qty'],
-                            'result_warehouse'      => $d['result_warehouse'],
-                            'InvtNmbr'              => $d['InvtNmbr'],
-                            'InvtType'              => $d['InvtType'],
-                            'trans_hd_id'           => $d['trans_hd_id'],
-                            'created_by'            => $data['created_by']
-                        ];
-                    }
                     DB::table('precise.production_result_dt')
-                    ->insert($dt);
+                    ->where('result_dt_id',$d['result_dt_id'])
+                    ->update([
+                        'result_hd_id'          => $d['result_hd_id'],
+                        'PrdNumber'             => $d['PrdNumber'],
+                        'ResultSeq'             => $resSeq,
+                        'ProductCode'           => $d['product_code'],
+                        'product_id'            => $d['product_id'],
+                        'result_qty'            => $d['result_qty'],
+                        'result_warehouse'      => $d['result_warehouse'],
+                        'InvtNmbr'              => $d['InvtNmbr'],
+                        'InvtType'              => $d['InvtType'],
+                        'trans_hd_id'           => $d['trans_hd_id'],
+                        'updated_by'            => $data['updated_by']
+                    ]);
                 }
-
-                if($data['updated'] != null)
-                {
-                    foreach($data['updated'] as $d)
-                    {
-                        DB::table('precise.production_result_dt')
-                        ->where('result_dt_id',$d['result_dt_id'])
-                        ->update([
-                            'result_hd_id'          => $d['result_hd_id'],
-                            'PrdNumber'             => $d['PrdNumber'],
-                            'ResultSeq'             => $resSeq,
-                            'ProductCode'           => $d['product_code'],
-                            'product_id'            => $d['product_id'],
-                            'result_qty'            => $d['result_qty'],
-                            'result_warehouse'      => $d['result_warehouse'],
-                            'InvtNmbr'              => $d['InvtNmbr'],
-                            'InvtType'              => $d['InvtType'],
-                            'trans_hd_id'           => $d['trans_hd_id'],
-                            'updated_by'            => $data['updated_by']
-                        ]);
-                    }
-                }
-
-                if($data['deleted'] != null)
-                {
-                    $delete = array();
-                    foreach($data['deleted'] as $del){
-                        $delete[] = $del['result_dt_id'];
-                    }
-
-                    DB::table('precise.production_result_dt')
-                    ->whereIn('result_dt_id', $delete)
-                    ->delete();
-                }
-
+               
                 DB::commit();
                 return response()->json(['status' => 'ok', 'message' => 'Production Result have been updated'], 200);
                 

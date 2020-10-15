@@ -39,6 +39,7 @@ class ProductionResultController extends Controller
                     'pr.PrdNumber', 
                     'pr.ResultSeq',
                     'prd.InvtNmbr',
+                    'wht.trans_description',
                     'pr.created_on',
                     'pr.created_by',
                     'pr.updated_on',
@@ -47,6 +48,7 @@ class ProductionResultController extends Controller
                 ->leftJoin('precise.production_result_dt as prd','pr.result_hd_id','=','prd.result_hd_id')
                 ->leftJoin('precise.work_order as wo','pr.work_order_hd_id','=','wo.work_order_hd_id')
                 ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
+                ->leftJoin('precise.warehouse_trans_hd as wht','prd.trans_hd_id','=','wht.trans_hd_id')
                 ->get();
 
             return response()->json(["data" => $this->productionResult]);

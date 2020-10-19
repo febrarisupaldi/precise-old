@@ -130,6 +130,14 @@ Route::group(
                 Route::put('downtime_group', 'Api\Master\DowntimeGroupController@update');
                 Route::delete('downtime_group/{id}','Api\Master\DowntimeGroupController@destroy');
 
+                //Downtime Group
+                Route::get('downtime_approval_status', 'Api\Master\DowntimeApprovalStatusController@index');
+                Route::get('downtime_approval_status/check', 'Api\Master\DowntimeApprovalStatusController@check');
+                Route::get('downtime_approval_status/{id}', 'Api\Master\DowntimeApprovalStatusController@show');
+                Route::post('downtime_approval_status', 'Api\Master\DowntimeApprovalStatusController@create');
+                Route::put('downtime_approval_status', 'Api\Master\DowntimeApprovalStatusController@update');
+                Route::delete('downtime_approval_status/{id}','Api\Master\DowntimeApprovalStatusController@destroy');
+
                 //Driving License
                 Route::get('department', 'Api\Master\DepartmentController@index');
 
@@ -466,10 +474,12 @@ Route::group(
                 Route::delete('work_order/{id}', 'Api\PPIC\WorkOrderController@destroy');
 
                 Route::get('production_result', 'Api\PPIC\ProductionResultController@index');
+                Route::get('production_result/approval', 'Api\PPIC\ProductionResultController@showProductionClone');
                 Route::get('production_result/{id}', 'Api\PPIC\ProductionResultController@show');
                 Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
                 Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
+                Route::get('production_result/check', 'Api\PPIC\ProductionResultController@check');
                 
                 Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
                 Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');

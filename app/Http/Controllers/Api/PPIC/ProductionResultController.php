@@ -135,6 +135,41 @@ class ProductionResultController extends Controller
         return response()->json($this->productionResult);
     }
 
+    public function showProductionClone()
+    {
+        $this->productionResult = DB::table('precise.production_result_clone as a')
+            ->select(
+                'a.result_hd_id',
+                'a.result_dt_id',
+                'b.PrdNumber',
+                'prh.result_date as before_result_date ',
+                'a.result_date as after_result_date',
+                'prh.result_shift as before_result_shift',
+                'a.result_shift as after_result_shift',
+                'wht.trans_description as before_trans_description',
+                'a.trans_description as after_trans_description',
+                'p.product_code',
+                'p.product_name',
+                'prd.result_qty as before_result_date',
+                'a.result_qty as after_result_qty',
+                DB::raw("
+                    case a.is_active 
+                        when 0 then 'Tidak aktif'
+                        when 1 then 'Aktif' 
+                    end as 'is_active'
+                "),               
+                'a.updated_on',
+                'a.updated_by' 
+            )
+            ->leftJoin('precise.production_result_hd as prh','a.result_hd_id','=','prh.result_hd_id')
+            ->leftJoin('precise.production_result_dt as prd','a.result_dt_id','=','prd.result_dt_id')
+            ->leftJoin('precise.warehouse_trans_hd as wht','prd.trans_hd_id','=','wht.trans_hd_id')
+            ->leftJoin('precise.product as p','dt.product_id','=','p.product_id')
+            ->get();
+
+        return response()->json(["data"=> $this->productionResult], 200);
+    }
+
     public function create(Request $request){
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
@@ -246,8 +281,37 @@ class ProductionResultController extends Controller
                     ];
                 }
 
+                foreach($data['downtime'] as $downtime){
+                    $dwt[] = [
+                        'result_hd_id'   => $id,
+                        'downtime_id'               => $d['downtime_id'],
+                        'start_time'                => $d['start_time'],
+                        'end_time'                  => $d['end_time'],
+                        'std_duration'              => $d['std_duration'],
+                        'downtime_note'             => $d['downtime_note'],
+                        'approval_status'           => $d['approval_status'],
+                        'approval_note'             => $d['approval_note'],
+                        'created_by'                => $data['created_by']
+                    ];
+                }
+
+                foreach($data['reject'] as $reject){
+                    $rjt[] = [
+                        'result_hd_id'              => $id,
+                        'reject_id'                 => $d['reject_id'],
+                        'reject_qty'                => $d['reject_qty'],
+                        'created_by'                => $data['created_by']
+                    ];
+                }
+
                 DB::table('precise.production_result_dt')
                 ->insert($dt);
+
+                DB::table('precise.production_downtime')
+                ->insert($dwt);
+
+                DB::table('precise.production_reject')
+                ->insert($rjt);
 
                 $trans = DB::table('precise.production_result_hd')
                         ->where('result_hd_id', $id)
@@ -283,85 +347,115 @@ class ProductionResultController extends Controller
             try
             {
                 QueryController::reason($data);
-                               
-                foreach($data['detail'] as $transdt){
-                    DB::table('precise.warehouse_trans_hd')
-                    ->where('trans_hd_id', $transdt['trans_hd_id'])
-                    ->update([
-                        'trans_date'         => $data['result_date'],
-                        'trans_from'         => $data['warehouse_id'],
-                        'work_order_id'      => $data['work_order_hd_id'],
-                        'work_order_number'  => $data['PrdNumber'],
-                        'trans_description'  => $data['trans_description'],
-                        'updated_by'         => $data['updated_by']
-                    ]);
-    
-                    DB::table('precise.warehouse_trans_dt')
+                
+                $mode = "";
+                $checkPB = DB::table('precise.material_usage')
+                ->where('work_order_hd_id', $data['work_order_hd_id'])
+                ->select(
+                    'work_order_hd_id'
+                )
+                ->first();
+
+                if($checkPB != null)
+                {
+                    $mode = "clone";
+                    foreach($data['detail'] as $detailresult){
+                        $this->productionResult = DB::table("precise.production_result_clone")
+                        ->insert([
+                            'result_hd_id'          =>$data['result_hd_id'],
+                            'result_dt_id'          =>$detailresult['result_dt_id'],
+                            'result_date'           =>$data['result_date'],
+                            'result_shift'          =>$data['result_shift'],
+                            'result_qty'            =>$detailresult['result_qty'],
+                            'trans_description'     =>$data['trans_description'],
+                            'is_active'             => 1 ,
+                            'updated_by'            =>$$data['updated_by']
+                        ]);       
+                    }                                            
+                }
+                else
+                {
+                    $mode = "update";
+                    foreach($data['detail'] as $transdt){
+                        DB::table('precise.production_result_hd')
                         ->where('trans_hd_id', $transdt['trans_hd_id'])
                         ->update([
-                            'product_id'            => $transdt['product_id'],
-                            'trans_in_qty'          => $transdt['result_qty'],
-                            'trans_uom'             => $transdt['uom_code'],
-                            'trans_in_qty_t'        => $transdt['result_qty'],
-                            'trans_uom_t'           => $transdt['uom_code'],
-                            'updated_by'            => $data['updated_by']                            
-                    ]);
-                }
-                
-                $resSeq = 0;
-                if($data['work_order_hd_id'] != $data['old_work_order_hd_id']){
-                    $resultSeq = DB::table('precise.production_result_hd')
-                    ->where('work_order_hd_id', $data['work_order_hd_id'])
-                    ->select(
-                        'ResultSeq'
-                    )
-                    ->orderBy('ResultSeq', 'DESC')
-                    ->first();
-                
-                    if($resultSeq != null)
-                    {
-                        $resSeq = $resultSeq->ResultSeq + 1;                                
+                            'trans_date'         => $data['result_date'],
+                            'trans_from'         => $data['warehouse_id'],
+                            'work_order_id'      => $data['work_order_hd_id'],
+                            'work_order_number'  => $data['PrdNumber'],
+                            'trans_description'  => $data['trans_description'],
+                            'updated_by'         => $data['updated_by']
+                        ]);
+        
+                        DB::table('precise.warehouse_trans_dt')
+                            ->where('trans_hd_id', $transdt['trans_hd_id'])
+                            ->update([
+                                'product_id'            => $transdt['product_id'],
+                                'trans_in_qty'          => $transdt['result_qty'],
+                                'trans_uom'             => $transdt['uom_code'],
+                                'trans_in_qty_t'        => $transdt['result_qty'],
+                                'trans_uom_t'           => $transdt['uom_code'],
+                                'updated_by'            => $data['updated_by']                            
+                        ]);
                     }
-                    else
-                    {
-                        $resSeq = 1;
+                    
+                    $resSeq = 0;
+                    if($data['work_order_hd_id'] != $data['old_work_order_hd_id']){
+                        $resultSeq = DB::table('precise.production_result_hd')
+                        ->where('work_order_hd_id', $data['work_order_hd_id'])
+                        ->select(
+                            'ResultSeq'
+                        )
+                        ->orderBy('ResultSeq', 'DESC')
+                        ->first();
+                    
+                        if($resultSeq != null)
+                        {
+                            $resSeq = $resultSeq->ResultSeq + 1;                                
+                        }
+                        else
+                        {
+                            $resSeq = 1;
+                        }
                     }
-                }
-                else{
-                    $resSeq = $data['ResultSeq'];
-                }
-                
-                DB::table('precise.production_result_hd')
-                ->where('result_hd_id',$data['result_hd_id'])
-                ->update([
-                    'result_date'         => $data['result_date'],
-                    'result_shift'        => $data['result_shift'],
-                    'work_order_hd_id'    => $data['work_order_hd_id'],
-                    'PrdNumber'           => $data['PrdNumber'],
-                    'ResultSeq'           => $resSeq,
-                    'updated_by'          => $data['updated_by']
-                ]);
-                foreach($data['detail'] as $d)
-                {
-                    DB::table('precise.production_result_dt')
-                    ->where('result_dt_id',$d['result_dt_id'])
+                    else{
+                        $resSeq = $data['ResultSeq'];
+                    }
+                    
+                    DB::table('precise.production_result_hd')
+                    ->where('result_hd_id',$data['result_hd_id'])
                     ->update([
-                        'result_hd_id'          => $d['result_hd_id'],
-                        'PrdNumber'             => $d['PrdNumber'],
-                        'ResultSeq'             => $resSeq,
-                        'ProductCode'           => $d['product_code'],
-                        'product_id'            => $d['product_id'],
-                        'result_qty'            => $d['result_qty'],
-                        'result_warehouse'      => $d['result_warehouse'],
-                        'InvtNmbr'              => $d['InvtNmbr'],
-                        'InvtType'              => $d['InvtType'],
-                        'trans_hd_id'           => $d['trans_hd_id'],
-                        'updated_by'            => $data['updated_by']
+                        'result_date'         => $data['result_date'],
+                        'result_shift'        => $data['result_shift'],
+                        'work_order_hd_id'    => $data['work_order_hd_id'],
+                        'PrdNumber'           => $data['PrdNumber'],
+                        'ResultSeq'           => $resSeq,
+                        'updated_by'          => $data['updated_by']
                     ]);
+                    foreach($data['detail'] as $d)
+                    {
+                        DB::table('precise.production_result_dt')
+                        ->where('result_dt_id',$d['result_dt_id'])
+                        ->update([
+                            'result_hd_id'          => $d['result_hd_id'],
+                            'PrdNumber'             => $d['PrdNumber'],
+                            'ResultSeq'             => $resSeq,
+                            'ProductCode'           => $d['product_code'],
+                            'product_id'            => $d['product_id'],
+                            'result_qty'            => $d['result_qty'],
+                            'result_warehouse'      => $d['result_warehouse'],
+                            'InvtNmbr'              => $d['InvtNmbr'],
+                            'InvtType'              => $d['InvtType'],
+                            'trans_hd_id'           => $d['trans_hd_id'],
+                            'updated_by'            => $data['updated_by']
+                        ]);
+                    }
                 }
                
+               
                 DB::commit();
-                return response()->json(['status' => 'ok', 'message' => 'Production Result have been updated'], 200);
+                return response()->json(['status' => 'ok', 'message' => $mode], 200);
                 
             }
             catch(\Exception $e){
@@ -420,9 +514,9 @@ class ProductionResultController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
-            if ($type == "number") {
-                $this->productionResult = DB::table('precise.production_result_hd')->where([
-                    'PrdNumber' => $value
+            if($type == "material_usage"){
+                $this->productionResult = DB::table('precise.material_usage')->where([
+                    'work_order_hd_id' => $value
                 ])->count();
             }
             return response()->json(['status' => 'ok', 'message' => $this->productionResult]);

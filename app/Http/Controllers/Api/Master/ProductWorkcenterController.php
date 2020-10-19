@@ -23,8 +23,9 @@ class ProductWorkcenterController extends Controller
                 'w.workcenter_name',
                 'bom.bom_code',
                 'bom.bom_name',
-		'wh.warehouse_code',
+		        'wh.warehouse_code',
                 'wh.warehouse_name',
+                'pw.output_tolerance',
                 'pw.created_on',
                 'pw.created_by',
                 'pw.updated_on',
@@ -33,7 +34,7 @@ class ProductWorkcenterController extends Controller
             ->leftJoin('precise.product as p','pw.product_id','=','p.product_id')
             ->leftJoin('precise.workcenter as w','pw.workcenter_id','=','w.workcenter_id')
             ->leftJoin('precise.bom_hd as bom','pw.bom_default','=','bom.bom_hd_id')
-	    ->leftJoin('precise.warehouse as wh','pw.warehouse_default','=','wh.warehouse_id')
+	        ->leftJoin('precise.warehouse as wh','pw.warehouse_default','=','wh.warehouse_id')
             ->get();
         return response()->json(["data" => $this->productWorkcenter]);
     }
@@ -48,15 +49,16 @@ class ProductWorkcenterController extends Controller
                 'pw.product_id',
                 'pw.workcenter_id',
                 'pw.bom_default',
-		'pw.warehouse_default',
+		        'pw.warehouse_default',
                 'p.product_code',
                 'p.product_name',
                 'w.workcenter_code',
                 'w.workcenter_name',
                 'bom.bom_code',
                 'bom.bom_name',
-		'wh.warehouse_code',
+		        'wh.warehouse_code',
                 'wh.warehouse_name',
+                'pw.output_tolerance',
                 'pw.created_on',
                 'pw.created_by',
                 'pw.updated_on',
@@ -65,7 +67,7 @@ class ProductWorkcenterController extends Controller
             ->leftJoin('precise.product as p', 'pw.product_id', '=', 'p.product_id')
             ->leftJoin('precise.workcenter as w', 'pw.workcenter_id', '=', 'w.workcenter_id')
             ->leftJoin('precise.bom_hd as bom','pw.bom_default','=','bom.bom_hd_id')
-  	    ->leftJoin('precise.warehouse as wh','pw.warehouse_default','=','wh.warehouse_id')
+  	        ->leftJoin('precise.warehouse as wh','pw.warehouse_default','=','wh.warehouse_id')
             ->first();
 
         return response()->json($this->productWorkcenter);
@@ -79,7 +81,7 @@ class ProductWorkcenterController extends Controller
                     'product_id'    => 'required|exists:product,product_id',
                     'workcenter_id' => 'required|exists:workcenter,workcenter_id',
                     'bom_default'   => 'nullable|exists:bom_hd,bom_hd_id',
- 		    'warehouse_default'   => 'nullable|exists:warehouse,warehouse_id',
+ 		            'warehouse_default'   => 'nullable|exists:warehouse,warehouse_id',
                     'created_by'    => 'required'
                 ]
             );
@@ -89,11 +91,12 @@ class ProductWorkcenterController extends Controller
             } else {
                 $this->productWorkcenter = DB::table("product_workcenter")
                     ->insert([
-                        'product_id'    => $request->product_id,
-                        'workcenter_id' => $request->workcenter_id,
-                        'bom_default'   => $request->bom_default,
- 			'warehouse_default'   => $request->warehouse_default,
-                        'created_by'    => $request->created_by
+                        'product_id'            => $request->product_id,
+                        'workcenter_id'         => $request->workcenter_id,
+                        'bom_default'           => $request->bom_default,
+                        'warehouse_default'     => $request->warehouse_default,
+                        'output_tolerance'      => $request->output_tolerance,
+                        'created_by'            => $request->created_by
                     ]);
                 
                 if ($this->productWorkcenter == 0) {
@@ -116,7 +119,7 @@ class ProductWorkcenterController extends Controller
                     'product_id'            => 'required|exists:product,product_id',
                     'workcenter_id'         => 'required|exists:workcenter,workcenter_id',
                     'bom_default'           => 'nullable|exists:bom_hd,bom_hd_id',
-		    'warehouse_default'   => 'nullable|exists:warehouse,warehouse_id',
+		            'warehouse_default'     => 'nullable|exists:warehouse,warehouse_id',
                     'updated_by'            => 'required',
                     'reason'                => 'required'
                 ]
@@ -130,11 +133,12 @@ class ProductWorkcenterController extends Controller
                 $this->productWorkcenter = DB::table("product_workcenter")
                     ->where('product_workcenter_id', $request->product_workcenter_id)
                     ->update([
-                        'product_id'    => $request->product_id,
-                        'workcenter_id' => $request->workcenter_id,
-                        'bom_default'   => $request->bom_default,
-			'warehouse_default'   => $request->warehouse_default,
-                        'updated_by'    => $request->updated_by
+                        'product_id'          => $request->product_id,
+                        'workcenter_id'       => $request->workcenter_id,
+                        'bom_default'         => $request->bom_default,
+                        'warehouse_default'   => $request->warehouse_default,
+                        'output_tolerance'    => $request->output_tolerance,
+                        'updated_by'          => $request->updated_by
                     ]);
                 
                 if ($this->productWorkcenter == 0) {

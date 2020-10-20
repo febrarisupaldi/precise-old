@@ -422,7 +422,7 @@ class ProductionResultController extends Controller
                 {
                     $mode = "update";
                     foreach($data['detail'] as $transdt){
-                        DB::table('precise.production_result_hd')
+                        DB::table('precise.warehouse_trans_hd')
                         ->where('trans_hd_id', $transdt['trans_hd_id'])
                         ->update([
                             'trans_date'         => $data['result_date'],

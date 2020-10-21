@@ -573,6 +573,14 @@ class ProductionResultController extends Controller
             ->where('trans_hd_id', $transid->trans_hd_id)
             ->delete();
 
+            DB::table('precise.production_downtime')
+            ->where('result_hd_id', $id)
+            ->delete();
+
+            DB::table('precise.production_reject')
+            ->where('result_hd_id', $id)
+            ->delete();
+
             DB::table('precise.production_result_dt')
             ->where('result_hd_id', $id)
             ->delete();
@@ -606,6 +614,120 @@ class ProductionResultController extends Controller
                 ])->count();
             }
             return response()->json(['status' => 'ok', 'message' => $this->productionResult]);
+        }
+    }
+
+    public function approve(Request $request){
+        $data = $request->json()->all();
+        $validator = Validator::make(json_decode(json_encode($data),true),[
+            'result_hd_id'          =>'required',
+            'result_date'           =>'required',
+            'result_shift'          =>'required',
+            'work_order_hd_id'      =>'required|exists:work_order,work_order_hd_id',
+            'PrdNumber'             =>'required',
+            'ResultSeq'             =>'required',
+            'updated_by'            =>'required',
+            'reason'                =>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        } else {
+            DB::beginTransaction();
+            try
+            {
+                QueryController::reason($data);
+                
+                foreach($data['detail'] as $transdt){
+                    DB::table('precise.warehouse_trans_hd')
+                    ->where('trans_hd_id', $transdt['trans_hd_id'])
+                    ->update([
+                        'trans_date'         => $data['result_date'],
+                        'trans_from'         => $data['warehouse_id'],
+                        'work_order_id'      => $data['work_order_hd_id'],
+                        'work_order_number'  => $data['PrdNumber'],
+                        'trans_description'  => $data['trans_description'],
+                        'updated_by'         => $data['updated_by']
+                    ]);
+    
+                    DB::table('precise.warehouse_trans_dt')
+                        ->where('trans_hd_id', $transdt['trans_hd_id'])
+                        ->update([
+                            'product_id'            => $transdt['product_id'],
+                            'trans_in_qty'          => $transdt['result_qty'],
+                            'trans_uom'             => $transdt['uom_code'],
+                            'trans_in_qty_t'        => $transdt['result_qty'],
+                            'trans_uom_t'           => $transdt['uom_code'],
+                            'updated_by'            => $data['updated_by']                            
+                    ]);
+                }
+                
+                $resSeq = 0;
+                if($data['work_order_hd_id'] != $data['old_work_order_hd_id']){
+                    $resultSeq = DB::table('precise.production_result_hd')
+                    ->where('work_order_hd_id', $data['work_order_hd_id'])
+                    ->select(
+                        'ResultSeq'
+                    )
+                    ->orderBy('ResultSeq', 'DESC')
+                    ->first();
+                
+                    if($resultSeq != null)
+                    {
+                        $resSeq = $resultSeq->ResultSeq + 1;                                
+                    }
+                    else
+                    {
+                        $resSeq = 1;
+                    }
+                }
+                else{
+                    $resSeq = $data['ResultSeq'];
+                }
+                
+                DB::table('precise.production_result_clone')
+                ->where('result_hd_id',$data['result_hd_id'])
+                ->where('is_active',1)
+                ->update([
+                    'is_active'    => 0
+                ]);
+
+                DB::table('precise.production_result_hd')
+                ->where('result_hd_id',$data['result_hd_id'])
+                ->update([
+                    'result_date'         => $data['result_date'],
+                    'result_shift'        => $data['result_shift'],
+                    'work_order_hd_id'    => $data['work_order_hd_id'],
+                    'PrdNumber'           => $data['PrdNumber'],
+                    'ResultSeq'           => $resSeq,
+                    'updated_by'          => $data['updated_by']
+                ]);
+                foreach($data['detail'] as $d)
+                {
+                    DB::table('precise.production_result_dt')
+                    ->where('result_dt_id',$d['result_dt_id'])
+                    ->update([
+                        'result_hd_id'          => $d['result_hd_id'],
+                        'PrdNumber'             => $d['PrdNumber'],
+                        'ResultSeq'             => $resSeq,
+                        'ProductCode'           => $d['product_code'],
+                        'product_id'            => $d['product_id'],
+                        'result_qty'            => $d['result_qty'],
+                        'result_warehouse'      => $d['result_warehouse'],
+                        'InvtNmbr'              => $d['InvtNmbr'],
+                        'InvtType'              => $d['InvtType'],
+                        'trans_hd_id'           => $d['trans_hd_id'],
+                        'updated_by'            => $data['updated_by']
+                    ]);
+                } 
+               
+                DB::commit();
+                return response()->json(['status' => 'ok', 'message' => $mode], 200);
+                
+            }
+            catch(\Exception $e){
+                DB::rollBack();
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            }
         }
     }
 }

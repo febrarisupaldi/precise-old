@@ -415,7 +415,7 @@ class ProductionResultController extends Controller
                             'result_qty'            =>$detailresult['result_qty'],
                             'trans_description'     =>$data['trans_description'],
                             'is_active'             => 1 ,
-                            'updated_by'            =>$$data['updated_by']
+                            'updated_by'            =>$data['updated_by']
                         ]);       
                     }                                            
                 }

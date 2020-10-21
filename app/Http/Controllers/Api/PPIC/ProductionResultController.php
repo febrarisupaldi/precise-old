@@ -198,7 +198,8 @@ class ProductionResultController extends Controller
                         when 0 then 'Tidak aktif'
                         when 1 then 'Aktif' 
                     end as 'is_active'
-                "),               
+                "),
+                'prd.InvtNmbr',               
                 'a.updated_on',
                 'a.updated_by' 
             )

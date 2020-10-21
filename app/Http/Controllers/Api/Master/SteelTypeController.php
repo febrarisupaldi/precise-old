@@ -41,7 +41,7 @@ class SteelTypeController extends Controller
                 'updated_on',
                 'updated_by'
             )
-            ->get();
+            ->first();
 
         return response()->json($this->steelType, 200);
     }
@@ -114,7 +114,7 @@ class SteelTypeController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
-            if ($type == "code") {
+            if ($type == "name") {
                 $this->steelType = DB::table('precise.steel_type')
                     ->where('steel_type_name', $value)
                     ->count();

@@ -43,7 +43,7 @@ class MachineTonnageController extends Controller
                 'updated_on',
                 'updated_by'
             )
-            ->get();
+            ->first();
 
         return response()->json($this->machineTonnage, 200);
     }

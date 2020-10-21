@@ -183,7 +183,7 @@ class ProductionResultController extends Controller
                 'a.result_hd_id',
                 'a.result_dt_id',
                 'prh.PrdNumber',
-                'prh.result_date as before_result_date ',
+                'prh.result_date as before_result_date',
                 'a.result_date as after_result_date',
                 'prh.result_shift as before_result_shift',
                 'a.result_shift as after_result_shift',

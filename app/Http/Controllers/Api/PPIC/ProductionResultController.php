@@ -722,7 +722,7 @@ class ProductionResultController extends Controller
                 } 
                
                 DB::commit();
-                return response()->json(['status' => 'ok', 'message' => $mode], 200);
+                return response()->json(['status' => 'ok', 'message' => 'Production Result has been Approved'], 200);
                 
             }
             catch(\Exception $e){

@@ -191,7 +191,7 @@ class ProductionResultController extends Controller
                 'a.trans_description as after_trans_description',
                 'p.product_code',
                 'p.product_name',
-                'prd.result_qty as before_result_date',
+                'prd.result_qty as before_result_qty',
                 'a.result_qty as after_result_qty',
                 DB::raw("
                     case a.is_active 

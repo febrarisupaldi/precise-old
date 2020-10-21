@@ -83,7 +83,7 @@ return response()->json($this->productCustomer);
                 'a.product_id',
                 'p.product_code as Kode barang',
                 'p.product_name as Nama barang',
-                'p.uom_code',
+                'p.uom_code', 'dt.price_idr',
 		'a.loss_tolerance as Loss tolerance',
 		'a.moq',
 		'a.oem_material_supply_type',
@@ -101,6 +101,7 @@ return response()->json($this->productCustomer);
             end as 'Status aktif order'")
             )->leftJoin('precise.product as p', 'a.product_id', '=', 'p.product_id')
             ->leftJoin('precise.customer as c', 'a.customer_id', '=', 'c.customer_id')
+            ->leftJoin('precise.price_list_dt as dt', 'p.product_code', '=', 'dt.product_code')
             ->where([
                 'a.customer_id' => $id,
                 'a.is_active' => 1

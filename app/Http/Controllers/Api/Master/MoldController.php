@@ -36,10 +36,19 @@ class MoldController extends Controller
                 'hd.status_code',
                 'status_description',
                 'hd.remake_from',
-                'hd.mold_description',
-                'hd2.mold_number as remake_from',
                 'hd2.mold_number as remake_from_number',
                 'hd2.mold_name as remake_from_name',
+                'hd.production_year',
+                'hd.tonnage_std',
+                'hd.tonnage_min',
+                'hd.tonnage_max',
+                'hd.steel_type_id',
+                'st.steel_type_name',
+                'hd.estimation_number',
+                'hd.mold_maker',
+                'hd.cooling_method_id',
+                'cm.cooling_method_name',
+                'hd.mold_description',
                 'hd.length',
                 'hd.width',
                 'hd.height',
@@ -59,6 +68,8 @@ class MoldController extends Controller
             ->leftJoin('precise.customer as c','hd.customer_id','=','c.customer_id')
             ->leftJoin('precise.mold_status as ms','hd.status_code','=','ms.status_code')
             ->leftJoin('precise.mold_hd as hd2','hd.remake_from','=','hd2.mold_hd_id')
+            ->leftJoin('precise.steel_type as st','hd.steel_type_id','=','st.steel_type_id')
+            ->leftJoin('precise.cooling_method as cm','hd.cooling_method_id','=','cm.cooling_method_id')
             ->get();
 
         return response()->json(["data" => $this->mold]);
@@ -91,8 +102,8 @@ class MoldController extends Controller
                 'status_description',
                 'hd.remake_from',
                 'hd.mold_description',
-                'hd2.mold_number as remake_from_number',
-                'hd2.mold_name as remake_from_name',
+                'hd2.mold_number as old_mold_number',
+                'hd2.mold_name as old_mold_name',                
                 'hd.length',
                 'hd.width',
                 'hd.height',
@@ -102,6 +113,14 @@ class MoldController extends Controller
                 'hd.plate_size_length',
                 'hd.plate_size_width',
                 'hd.plate_size_uom',
+                'hd.tonnage_std',
+                'hd.tonnage_min',
+                'hd.tonnage_max',
+                'hd.production_year',
+                'hd.steel_type_id',
+                'hd.estimation_number',
+                'hd.mold_maker',
+                'hd.cooling_method_id',
                 'hd.is_active'
             )
             ->leftJoin('precise.workcenter as w','hd.workcenter_id','=','w.workcenter_id')
@@ -162,8 +181,8 @@ class MoldController extends Controller
                 'status_description' => $master->status_description,
                 'remake_from'        => $master->remake_from,
                 'mold_description'   => $master->mold_description,
-                'hd2.mold_number'    => $master->mold_number,
-                'hd2.mold_name'      => $master->mold_name,
+                'old_mold_number'    => $master->old_mold_number,
+                'old_mold_name'      => $master->old_mold_name,
                 'length'             => $master->length,
                 'width'              => $master->width,
                 'height'             => $master->height,
@@ -173,6 +192,14 @@ class MoldController extends Controller
                 'plate_size_length'  => $master->plate_size_length,
                 'plate_size_width'   => $master->plate_size_width,
                 'plate_size_uom'     => $master->plate_size_uom,
+                'tonnage_std'     => $master->tonnage_std,
+                'tonnage_min'     => $master->tonnage_min,
+                'tonnage_max'     => $master->tonnage_max,
+                'production_year' => $master->production_year,
+                'steel_type_id'   => $master->steel_type_id,
+                'estimation_number'     => $master->estimation_number,
+                'mold_maker'      => $master->mold_maker,
+                'cooling_method_id'     => $master->cooling_method_id,
                 'is_active'          => $master->is_active,
                 'detail'             => $all
             );
@@ -197,8 +224,18 @@ class MoldController extends Controller
                 'hd.status_code',
                 'status_description',
                 'hd.remake_from',
-                'hd2.mold_number',
-                'hd2.mold_name',
+                'hd2.mold_number as old_mold_number',
+                'hd2.mold_name as old_mold_name',
+                'hd.production_year',
+                'hd.tonnage_std',
+                'hd.tonnage_min',
+                'hd.tonnage_max',
+                'hd.steel_type_id',
+                'st.steel_type_name',
+                'hd.estimation_number',
+                'hd.mold_maker',
+                'hd.cooling_method_id',
+                'cm.cooling_method_name',
                 'hd.mold_description', 
                 'hd.length',
                 'hd.width',
@@ -229,6 +266,8 @@ class MoldController extends Controller
             ->leftJoin('precise.customer as c','hd.customer_id','=','c.customer_id')
             ->leftJoin('precise.mold_status as ms','hd.status_code','=','ms.status_code')
             ->leftJoin('precise.product_item as pi','dt.item_id','=','pi.item_id')
+            ->leftJoin('precise.steel_type as st','hd.steel_type_id','=','st.steel_type_id')
+            ->leftJoin('precise.cooling_method as cm','hd.cooling_method_id','=','cm.cooling_method_id')
             ->get();
 
             return response()->json(["data" => $this->mold]);
@@ -282,6 +321,7 @@ class MoldController extends Controller
             //'plate_size_length' => 'required|numeric',
             //'plate_size_width'  => 'required|numeric',
             //'plate_size_uom'    => 'required|exists:uom,uom_code',
+            'tonnage_std'       => 'required|exists:machine_tonnage,tonnage_group',
             'created_by'        => 'required',
             'detail'            => 'required'
         ]);
@@ -306,6 +346,16 @@ class MoldController extends Controller
                         'dimension_uom'     =>$data['dimension_uom'],
                         'weight'            =>$data['weight'],
                         'weight_uom'        =>$data['weight_uom'],
+
+                        'tonnage_std'        =>$data['tonnage_std'],
+                        'tonnage_min'        =>$data['tonnage_min'],
+                        'tonnage_max'        =>$data['tonnage_max'],
+                        'production_year'        =>$data['production_year'],
+                        'steel_type_id'        =>$data['steel_type_id'],
+                        'estimation_number'        =>$data['estimation_number'],
+                        'mold_maker'        =>$data['mold_maker'],
+                        'cooling_method_id'        =>$data['cooling_method_id'],
+
                         'plate_size_length' =>$data['plate_size_length'],
                         'plate_size_width'  =>$data['plate_size_length'],
                         'plate_size_uom'    =>$data['plate_size_uom'],
@@ -374,8 +424,8 @@ class MoldController extends Controller
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[
             'mold_hd_id'        => 'required|exists:mold_hd,mold_hd_id',
-            'mold_number'       => 'required|unique:mold_hd,mold_number',
-            'mold_name'         => 'required|unique:mold_hd,mold_name',
+            'mold_number'       => 'required',
+            'mold_name'         => 'required',
             'workcenter_id'     => 'required|exists:workcenter,workcenter_id',
             'is_family_mold'    => 'required|boolean',
             //'customer_id'       => 'required|exists:customer,customer_id',
@@ -390,6 +440,7 @@ class MoldController extends Controller
             //'plate_size_length' => 'required|numeric',
             //'plate_size_width'  => 'required|numeric',
             //'plate_size_uom'    => 'required|exists:uom,uom_code',
+            'tonnage_std'        => 'required|exists:machine_tonnage,tonnage_group',
             'updated_by'        => 'required',
             //'detail'            => 'required'
         ]);
@@ -419,6 +470,14 @@ class MoldController extends Controller
                         'plate_size_length' =>$data['plate_size_length'],
                         'plate_size_width'  =>$data['plate_size_length'],
                         'plate_size_uom'    =>$data['plate_size_uom'],
+                        'tonnage_std'       =>$data['tonnage_std'],
+                        'tonnage_min'       =>$data['tonnage_min'],
+                        'tonnage_max'       =>$data['tonnage_max'],
+                        'production_year'   =>$data['production_year'],
+                        'steel_type_id'     =>$data['steel_type_id'],
+                        'estimation_number' =>$data['estimation_number'],
+                        'mold_maker'        =>$data['mold_maker'],
+                        'cooling_method_id' =>$data['cooling_method_id'],
                         'updated_by'        =>$data['updated_by']
                     ]);
                 

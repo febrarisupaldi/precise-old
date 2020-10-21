@@ -81,6 +81,13 @@ Route::group(
                 Route::post('company_type', 'Api\Master\CompanyTypeController@create');
                 Route::put('company_type', 'Api\Master\CompanyTypeController@update');
 
+                //Cooling Method
+                Route::get('cooling_method', 'Api\Master\CoolingMethodController@index');
+                Route::get('cooling_method/check', 'Api\Master\CoolingMethodController@check');
+                Route::get('cooling_method/{id}', 'Api\Master\CoolingMethodController@show');
+                Route::post('cooling_method', 'Api\Master\CoolingMethodController@create');
+                Route::put('cooling_method', 'Api\Master\CoolingMethodController@update');
+
                 //country
                 Route::get('country', 'Api\Master\CountryController@index');
                 Route::get('country/check', 'Api\Master\CountryController@check');
@@ -106,6 +113,30 @@ Route::group(
                 Route::post('customer_group_member', 'Api\Master\CustomerGroupMemberController@create');
                 Route::delete('customer_group_member/{id}', 'Api\Master\CustomerGroupMemberController@destroy');
                 Route::get('customer_group_member/check', 'Api\Master\CustomerGroupMemberController@check');
+                
+                //Downtime
+                Route::get('downtime', 'Api\Master\DowntimeController@index');
+                Route::get('downtime/check', 'Api\Master\DowntimeController@check');
+                Route::get('downtime/{id}', 'Api\Master\DowntimeController@show');
+                Route::post('downtime', 'Api\Master\DowntimeController@create');
+                Route::put('downtime', 'Api\Master\DowntimeController@update');
+                Route::delete('downtime/{id}','Api\Master\DowntimeController@destroy');
+
+                //Downtime Group
+                Route::get('downtime_group', 'Api\Master\DowntimeGroupController@index');
+                Route::get('downtime_group/check', 'Api\Master\DowntimeGroupController@check');
+                Route::get('downtime_group/{id}', 'Api\Master\DowntimeGroupController@show');
+                Route::post('downtime_group', 'Api\Master\DowntimeGroupController@create');
+                Route::put('downtime_group', 'Api\Master\DowntimeGroupController@update');
+                Route::delete('downtime_group/{id}','Api\Master\DowntimeGroupController@destroy');
+
+                //Downtime Group
+                Route::get('downtime_approval_status', 'Api\Master\DowntimeApprovalStatusController@index');
+                Route::get('downtime_approval_status/check', 'Api\Master\DowntimeApprovalStatusController@check');
+                Route::get('downtime_approval_status/{id}', 'Api\Master\DowntimeApprovalStatusController@show');
+                Route::post('downtime_approval_status', 'Api\Master\DowntimeApprovalStatusController@create');
+                Route::put('downtime_approval_status', 'Api\Master\DowntimeApprovalStatusController@update');
+                Route::delete('downtime_approval_status/{id}','Api\Master\DowntimeApprovalStatusController@destroy');
 
                 //Driving License
                 Route::get('department', 'Api\Master\DepartmentController@index');
@@ -148,6 +179,13 @@ Route::group(
                 Route::get('machine_status/{id}', 'Api\Master\MachineStatusController@show');
                 Route::post('machine_status', 'Api\Master\MachineStatusController@create');
                 Route::put('machine_status', 'Api\Master\MachineStatusController@update');
+
+                //Machine Tonnage
+                Route::get('machine_tonnage', 'Api\Master\MachineTonnageController@index');
+                Route::get('machine_tonnage/check', 'Api\Master\MachineTonnageController@check');
+                Route::get('machine_tonnage/{id}', 'Api\Master\MachineTonnageController@show');
+                Route::post('machine_tonnage', 'Api\Master\MachineTonnageController@create');
+                Route::put('machine_tonnage', 'Api\Master\MachineTonnageController@update');
 
                 //menu
                 Route::get('menu', 'Api\Master\MenuController@index');
@@ -275,6 +313,22 @@ Route::group(
                 Route::post('product_workcenter', 'Api\Master\ProductWorkcenterController@create');
                 Route::put('product_workcenter', 'Api\Master\ProductWorkcenterController@update');
                 Route::delete('product_workcenter/{id}', 'Api\Master\ProductWorkcenterController@destroy');
+                
+                //Reject
+                Route::get('reject', 'Api\Master\RejectController@index');
+                Route::get('reject/check', 'Api\Master\RejectController@check');
+                Route::get('reject/{id}', 'Api\Master\RejectController@show');
+                Route::post('reject', 'Api\Master\RejectController@create');
+                Route::put('reject', 'Api\Master\RejectController@update');
+                Route::delete('reject/{id}','Api\Master\RejectController@destroy');
+
+                //Reject
+                Route::get('reject_group', 'Api\Master\RejectGroupController@index');
+                Route::get('reject_group/check', 'Api\Master\RejectGroupController@check');
+                Route::get('reject_group/{id}', 'Api\Master\RejectGroupController@show');
+                Route::post('reject_group', 'Api\Master\RejectGroupController@create');
+                Route::put('reject_group', 'Api\Master\RejectGroupController@update');
+                Route::delete('reject_group/{id}','Api\Master\RejectGroupController@destroy');
 
                 //Religion
                 Route::get('religion', 'Api\Master\ReligionController@index');
@@ -298,6 +352,13 @@ Route::group(
                 Route::get('state/{id}', 'Api\Master\StateController@show')->where('id', '[0-9]+');
                 Route::post('state', 'Api\Master\StateController@create');
                 Route::put('state', 'Api\Master\StateController@update');
+
+                //Steel Type
+                Route::get('steel_type', 'Api\Master\SteelTypeController@index');
+                Route::get('steel_type/check', 'Api\Master\SteelTypeController@check');
+                Route::get('steel_type/{id}', 'Api\Master\SteelTypeController@show');
+                Route::post('steel_type', 'Api\Master\SteelTypeController@create');
+                Route::put('steel_type', 'Api\Master\SteelTypeController@update');
 
                 //Technical Standard
                 Route::get('technical_standard', 'Api\Master\TechnicalStandardController@index');
@@ -413,11 +474,14 @@ Route::group(
                 Route::delete('work_order/{id}', 'Api\PPIC\WorkOrderController@destroy');
 
                 Route::get('production_result', 'Api\PPIC\ProductionResultController@index');
+                Route::get('production_result/approval', 'Api\PPIC\ProductionResultController@showProductionClone');
+                Route::get('production_result/check', 'Api\PPIC\ProductionResultController@check');
                 Route::get('production_result/{id}', 'Api\PPIC\ProductionResultController@show');
                 Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
+                Route::put('production_result/approval/detail', 'Api\PPIC\ProductionResultController@approve');
                 Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
-                
+                                
                 Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
                 Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');
                 Route::post('material_usage', 'Api\PPIC\MaterialUsageController@create');

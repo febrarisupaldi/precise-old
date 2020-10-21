@@ -475,13 +475,13 @@ Route::group(
 
                 Route::get('production_result', 'Api\PPIC\ProductionResultController@index');
                 Route::get('production_result/approval', 'Api\PPIC\ProductionResultController@showProductionClone');
+                Route::get('production_result/check', 'Api\PPIC\ProductionResultController@check');
                 Route::get('production_result/{id}', 'Api\PPIC\ProductionResultController@show');
                 Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
-                Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
-                Route::get('production_result/check', 'Api\PPIC\ProductionResultController@check');
                 Route::put('production_result/approve/detail', 'Api\PPIC\ProductionResultController@approve');
-                
+                Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
+                                
                 Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
                 Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');
                 Route::post('material_usage', 'Api\PPIC\MaterialUsageController@create');

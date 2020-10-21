@@ -479,7 +479,7 @@ Route::group(
                 Route::get('production_result/{id}', 'Api\PPIC\ProductionResultController@show');
                 Route::post('production_result', 'Api\PPIC\ProductionResultController@create');
                 Route::put('production_result/detail', 'Api\PPIC\ProductionResultController@update');
-                Route::put('production_result/approve/detail', 'Api\PPIC\ProductionResultController@approve');
+                Route::put('production_result/approval/detail', 'Api\PPIC\ProductionResultController@approve');
                 Route::delete('production_result/{id}', 'Api\PPIC\ProductionResultController@destroy');
                                 
                 Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');

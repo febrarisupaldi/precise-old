@@ -484,6 +484,7 @@ Route::group(
                                 
                 Route::get('material_usage', 'Api\PPIC\MaterialUsageController@index');
                 Route::get('material_usage/{id}', 'Api\PPIC\MaterialUsageController@show');
+                Route::get('material_usage/work_order/{id}', 'Api\PPIC\MaterialUsageController@showByWorkOrderID');
                 Route::post('material_usage', 'Api\PPIC\MaterialUsageController@create');
                 Route::put('material_usage/detail', 'Api\PPIC\MaterialUsageController@update');
                 Route::delete('material_usage/{id}', 'Api\PPIC\MaterialUsageController@destroy');

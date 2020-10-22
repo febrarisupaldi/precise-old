@@ -508,8 +508,9 @@ class PurchaseOrderController extends Controller
                 ->select(
                     'oem_order_dt_id',
                     'pc.product_id',
-                    'product_code',
+                    'p.product_code',
                     'product_name',
+                    'pldt.price_idr',
                     'oem_order_qty',
                     'due_date',
                     'oem_order_dt_seq',
@@ -517,7 +518,7 @@ class PurchaseOrderController extends Controller
                     'v.sum_received_qty as total_received_qty',
                     'v.outstanding_qty as outstanding_qty',
                     DB::raw('0 as delivery_qty'),
-                    'uom_code',
+                    'p.uom_code',
                     DB::raw('0 as packaging_id'),
                     DB::raw('null as packaging_code'),
                     DB::raw('null as packaging_name'),
@@ -527,6 +528,7 @@ class PurchaseOrderController extends Controller
                 )
                 ->leftJoin('precise.product_customer as pc', 'v.product_customer_id','=','pc.product_customer_id')
                 ->leftJoin('precise.product as p','pc.product_id', '=', 'p.product_id')
+                ->leftJoin('precise.price_list_dt as pldt','p.product_code', '=', 'pldt.product_code')
                 ->get();
         return response()->json(['data'=> $this->purchaseOrder]);
     }

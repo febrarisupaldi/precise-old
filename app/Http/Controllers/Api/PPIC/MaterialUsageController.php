@@ -158,7 +158,7 @@ class MaterialUsageController extends Controller
     }
 
     public function showByWorkOrderID($id){
-        $master = DB::table("precise.material_usage as mu")
+        $this->materialUsage = DB::table("precise.material_usage as mu")
         ->where("mu.work_order_hd_id", $id)
         ->select(
             'mu.usage_id',

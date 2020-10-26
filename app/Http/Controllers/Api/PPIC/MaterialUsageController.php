@@ -157,6 +157,47 @@ class MaterialUsageController extends Controller
         return response()->json($this->materialUsage);
     }
 
+    public function showByWorkOrderID($id){
+        $this->materialUsage = DB::table("precise.material_usage as mu")
+        ->where("mu.work_order_hd_id", $id)
+        ->select(
+            'mu.usage_id',
+            'mu.production_date',
+            'mu.bom_factor',
+            'w.workcenter_code',
+            'w.workcenter_name',  
+            'mu.work_order_hd_id',
+            'mu.material_id',
+            'p.product_code',
+            'p.product_name',
+            'mu.material_qty',
+            'mu.material_uom',
+            'mu.warehouse_id',
+            'wh.warehouse_code',
+            'wh.warehouse_name',
+            'mu.bom_hd_id',
+            'b.bom_code',
+            'b.bom_name',
+            'mu.PrdNumber', 
+            'mu.usage_description',
+            'mu.InvtNmbr',
+            'mu.InvtType',
+            'mu.trans_hd_id',
+            'mu.created_on',
+            'mu.created_by',
+            'mu.updated_on',
+            'mu.updated_by'
+        )
+        ->leftJoin('precise.work_order as wo','mu.work_order_hd_id','=','wo.work_order_hd_id')
+        ->leftJoin('precise.workcenter as w','wo.workcenter_id','=','w.workcenter_id')
+        ->leftJoin('precise.product as p','mu.material_id','=','p.product_id')
+        ->leftJoin('precise.warehouse as wh','mu.warehouse_id','=','wh.warehouse_id')
+        ->leftJoin('precise.bom_hd as b','mu.bom_hd_id','=','b.bom_hd_id')
+        ->get();
+        
+        return response()->json(["data" => $this->materialUsage]);
+    }
+
     public function create(Request $request){
         $data = $request->json()->all();
         $validator = Validator::make(json_decode(json_encode($data),true),[

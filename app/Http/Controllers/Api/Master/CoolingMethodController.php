@@ -43,7 +43,7 @@ class CoolingMethodController extends Controller
                 'updated_on',
                 'updated_by'
             )
-            ->get();
+            ->first();
         
         return response()->json($this->coolingMethod,200);
     }
@@ -121,7 +121,7 @@ class CoolingMethodController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
-            if ($type == "code") {
+            if ($type == "name") {
                 $this->coolingMethod = DB::table('precise.cooling_method')
                     ->where('cooling_method_name', $value)
                     ->count();

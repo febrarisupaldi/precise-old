@@ -25,7 +25,7 @@ class DummyController extends Controller
         $this->dummy = DB::table('precise.')
             ->where('',$id)
             ->select()
-            ->get();
+            ->first();
 
         return response()->json($this->dummy, 200);
     }
@@ -43,9 +43,9 @@ class DummyController extends Controller
                     'created_by'        => $request->created_by
                 ]);
             if ($this->dummy == 0) {
-                return response()->json(['status' => 'error', 'message' => 'Failed to create ..., Contact your administrator']);
+                return response()->json(['status' => 'error', 'message' => 'Failed to create dummy, Contact your administrator']);
             } else {
-                return response()->json(['status' => 'ok', 'message' => '... has been created']);
+                return response()->json(['status' => 'ok', 'message' => 'dummy has been created']);
             }
         }
     }
@@ -69,10 +69,10 @@ class DummyController extends Controller
                     ]);
                 if($this->dummy == 0) {
                     DB::rollback();
-                    return response()->json(['status' => 'error', 'message' => 'Failed to update ..., Contact your administrator']);
+                    return response()->json(['status' => 'error', 'message' => 'Failed to update dummy, Contact your administrator']);
                 } else {
                     DB::commit();
-                    return response()->json(['status' => 'ok', 'message' => '... has been updated']);
+                    return response()->json(['status' => 'ok', 'message' => 'dummy has been updated']);
                 }
             }catch(\Exception $e) {
                 DB::rollBack();
@@ -92,10 +92,10 @@ class DummyController extends Controller
 
             if ($this->dummy == 0) {
                 DB::rollback();
-                return response()->json(['status' => 'error', 'message' => 'Failed to delete ..., Contact your administrator']);
+                return response()->json(['status' => 'error', 'message' => 'Failed to delete dummy, Contact your administrator']);
             } else {
                 DB::commit();
-                return response()->json(['status' => 'ok', 'message' =>'... has been deleted']);
+                return response()->json(['status' => 'ok', 'message' =>'dummy has been deleted']);
             }
         }catch(\Exception $e){
             DB::rollBack();

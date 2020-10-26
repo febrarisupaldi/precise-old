@@ -239,9 +239,13 @@ Route::group(
                 Route::delete('privilege_workcenter', 'Api\Master\PrivilegeWorkcenterController@destroy');
 
                 //Product
-                Route::get('product/{id}', 'Api\Master\ProductController@show');
-                Route::get('product/product_group/{id}', 'Api\Master\ProductController@showByProductGroup');
+                Route::get('product/product_group', 'Api\Master\ProductController@index');
+                Route::get('product/check', 'Api\Master\ProductController@check');
                 Route::get('product/product_type/{id}', 'Api\Master\ProductController@showByProductType');
+                Route::get('product/{id}', 'Api\Master\ProductController@show');
+                Route::post('product', 'Api\Master\ProductController@create');
+                Route::put('product', 'Api\Master\ProductController@update');
+                Route::delete('product', 'Api\Master\ProductController@destroy');
 
                 //Product Appearance
                 Route::get('product_appearance', 'Api\Master\ProductAppearanceController@index');
@@ -272,6 +276,13 @@ Route::group(
                 Route::post('product_design', 'Api\Master\ProductDesignController@create');
                 Route::put('product_design', 'Api\Master\ProductDesignController@update');
                 Route::delete('product_design/{id}', 'Api\Master\ProductDesignController@destroy');
+
+                //Product Dictionary
+                Route::get('product_dictionary', 'Api\Master\ProductDictionaryController@index');
+                Route::get('product_dictionary/{id}', 'Api\Master\ProductDictionaryController@show');
+                Route::post('product_dictionary', 'Api\Master\ProductDictionaryController@create');
+                Route::put('product_dictionary', 'Api\Master\ProductDictionaryController@update');
+                Route::delete('product_dictionary', 'Api\Master\ProductDictionaryController@destroy');
 
                 //Product Group
                 Route::get('product_group', 'Api\Master\ProductGroupController@index');

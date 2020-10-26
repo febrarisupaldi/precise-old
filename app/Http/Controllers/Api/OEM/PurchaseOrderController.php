@@ -528,7 +528,17 @@ class PurchaseOrderController extends Controller
                 )
                 ->leftJoin('precise.product_customer as pc', 'v.product_customer_id','=','pc.product_customer_id')
                 ->leftJoin('precise.product as p','pc.product_id', '=', 'p.product_id')
-                ->leftJoin('precise.price_list_dt as pldt','p.product_code', '=', 'pldt.product_code')
+                ->leftJoin('precise.customer as c','c.customer_id', '=', 'v.customer_id')
+                ->leftJoin('precise.price_list_hd as plhd', function($join){
+                    $join
+                    ->on('plhd.price_group_code', '=', 'c.price_group_code')
+                    ->where('plhd.price_status','=','A');
+                })
+                ->leftJoin('precise.price_list_dt as pldt', function($join){
+                    $join->on('pldt.price_group_code', '=', 'plhd.price_group_code')
+                    ->on('pldt.price_group_seq', '=', 'plhd.price_seq')
+                    ->on('p.product_code','=','pldt.product_code');
+                    })
                 ->get();
         return response()->json(['data'=> $this->purchaseOrder]);
     }

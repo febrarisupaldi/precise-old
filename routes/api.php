@@ -476,7 +476,7 @@ Route::group(
             function () {
                 Route::get('work_order', 'Api\PPIC\WorkOrderController@index');
                 Route::get('work_order/workcenter/{id}', 'Api\PPIC\WorkOrderController@showByWorkcenter');
-                Route::get('work_order/import/check_bom_product','Api\PPIC\WorkOrderController@showImportCheckBOMAndProduct');
+                Route::get('work_order/import/bom_product','Api\PPIC\WorkOrderController@showImportCheckBOMAndProduct');
                 Route::get('work_order/import/check_product_workcenter','Api\PPIC\WorkOrderController@showImportCheckProductAndWorkcenter');
                 Route::get('work_order/check', 'Api\PPIC\WorkOrderController@check');
                 Route::get('work_order/{id}', 'Api\PPIC\WorkOrderController@show');
@@ -522,6 +522,9 @@ Route::group(
             Route::post('delivery_schedule', 'Api\OEM\DeliveryScheduleController@create');
             Route::put('delivery_schedule', 'Api\OEM\DeliveryScheduleController@update');
             Route::delete('delivery_schedule', 'Api\OEM\DeliveryScheduleController@destroy');
+
+            Route::get('material-balance/stock-card', 'Api\OEM\MaterialBalanceController@stock_card');
+            Route::get('material-balance/stock-mutation', 'Api\OEM\MaterialBalanceController@stock_mutation');
 
             Route::get('material_customer', 'Api\OEM\MaterialCustomerController@index');
             Route::get('material_customer/full', 'Api\OEM\MaterialCustomerController@joined');

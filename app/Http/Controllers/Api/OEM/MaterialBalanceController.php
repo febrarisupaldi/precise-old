@@ -25,7 +25,7 @@ class MaterialBalanceController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         } else {
-            $this->materialBalance = DB::select(
+            $this->materialBalance = DB::connection('mysql2')->select(
                 'call precise.oem_get_material_stock_card(:start,:end,:material)', 
                 [
                     'start' => $start,

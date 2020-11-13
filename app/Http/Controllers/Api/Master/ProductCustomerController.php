@@ -83,7 +83,7 @@ return response()->json($this->productCustomer);
                 'a.product_id',
                 'p.product_code as Kode barang',
                 'p.product_name as Nama barang',
-                'p.uom_code', 'dt.price_idr',
+                'p.uom_code', 'pldt.price_idr',
 		'a.loss_tolerance as Loss tolerance',
 		'a.moq',
 		'a.oem_material_supply_type',
@@ -101,7 +101,18 @@ return response()->json($this->productCustomer);
             end as 'Status aktif order'")
             )->leftJoin('precise.product as p', 'a.product_id', '=', 'p.product_id')
             ->leftJoin('precise.customer as c', 'a.customer_id', '=', 'c.customer_id')
-            ->leftJoin('precise.price_list_dt as dt', 'p.product_code', '=', 'dt.product_code')
+            ->leftJoin('precise.price_list_hd as plhd', function($join){
+                $join
+                ->on('plhd.price_group_code', '=', 'c.price_group_code')
+                ->where('plhd.price_status','=','A');
+            })
+            ->leftJoin('precise.price_list_dt as pldt', function($join){
+                $join
+                ->on('pldt.price_group_code', '=', 'plhd.price_group_code')
+                ->on('pldt.price_group_seq', '=', 'plhd.price_seq')
+                ->on('p.product_code','=','pldt.product_code');
+                })
+            //->leftJoin('precise.price_list_dt as dt', 'p.product_code', '=', 'dt.product_code')
             ->where([
                 'a.customer_id' => $id,
                 'a.is_active' => 1

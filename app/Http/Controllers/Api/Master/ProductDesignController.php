@@ -18,11 +18,11 @@ class ProductDesignController extends Controller
                 'design_code',
                 'design_name',
                 'design_description',
-		'a.appearance_id',
+		        'a.appearance_id',
                 'appearance_name',
-		'a.license_type_id',
+		        'a.license_type_id',
                 'license_type_name',
-		'a.color_type_id',
+		        'a.color_type_id',
                 DB::raw("concat(d.color_type_code, ' - ', d.color_type_name) as 'color_type',
                     case a.is_active_sell
                         when 0 then 'Tidak aktif'
@@ -32,7 +32,7 @@ class ProductDesignController extends Controller
                         when 0 then 'Tidak aktif'
                         when 1 then 'Aktif' 
                     end as 'is_active_production'
-		   , case a.is_active
+		            , case a.is_active
                         when 0 then 'Tidak aktif'
                         when 1 then 'Aktif' 
                     end as 'is_active'"),
@@ -57,15 +57,14 @@ class ProductDesignController extends Controller
                 'design_name',
                 'design_description',
                 'appearance_id',
-		'license_type_id',
                 'license_type_id',
                 'color_type_id',
                 'is_active_sell',
                 'is_active_production',
-		 'is_active'
+		        'is_active'
             )
             //->get();
-	   ->first();
+	        ->first();
         //return response()->json(["data" => $this->productDesign]);
 	return response()->json( $this->productDesign);
     }

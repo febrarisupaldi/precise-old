@@ -502,44 +502,43 @@ class PurchaseOrderController extends Controller
 
     public function remaining($id){
         $this->purchaseOrder = 
-                DB::table('precise.view_oem_outstanding_po as v')
-                ->where('v.oem_order_hd_id', $id)
-                ->where('outstanding_qty', '>', 0)
-                ->select(
-                    'oem_order_dt_id',
-                    'pc.product_id',
-                    'p.product_code',
-                    'product_name',
-                    'pldt.price_idr',
-                    'oem_order_qty',
-                    'due_date',
-                    'oem_order_dt_seq',
-                    'v.sum_on_going_qty as total_on_going_qty',
-                    'v.sum_received_qty as total_received_qty',
-                    'v.outstanding_qty as outstanding_qty',
-                    DB::raw('0 as delivery_qty'),
-                    'p.uom_code',
-                    DB::raw('0 as packaging_id'),
-                    DB::raw('null as packaging_code'),
-                    DB::raw('null as packaging_name'),
-                    DB::raw('0 as packaging_qty'),
-                    DB::raw('null as packaging_uom_code'),
-                    DB::raw('null as packaging_description')
-                )
-                ->leftJoin('precise.product_customer as pc', 'v.product_customer_id','=','pc.product_customer_id')
-                ->leftJoin('precise.product as p','pc.product_id', '=', 'p.product_id')
-                ->leftJoin('precise.customer as c','c.customer_id', '=', 'v.customer_id')
-                ->leftJoin('precise.price_list_hd as plhd', function($join){
-                    $join
-                    ->on('plhd.price_group_code', '=', 'c.price_group_code')
+            DB::table('precise.view_oem_outstanding_po as v')
+            ->where('v.oem_order_hd_id', $id)
+            ->where('outstanding_qty', '>', 0)
+            ->select(
+                'oem_order_dt_id',
+                'pc.product_id',
+                'p.product_code',
+                'product_name',
+                'pldt.price_idr',
+                'oem_order_qty',
+                'due_date',
+                'oem_order_dt_seq',
+                'v.sum_on_going_qty as total_on_going_qty',
+                'v.sum_received_qty as total_received_qty',
+                'v.outstanding_qty as outstanding_qty',
+                DB::raw('0 as delivery_qty'),
+                'p.uom_code',
+                DB::raw('0 as packaging_id'),
+                DB::raw('null as packaging_code'),
+                DB::raw('null as packaging_name'),
+                DB::raw('0 as packaging_qty'),
+                DB::raw('null as packaging_uom_code'),
+                DB::raw('null as packaging_description')
+            )
+            ->leftJoin('precise.product_customer as pc', 'v.product_customer_id','=','pc.product_customer_id')
+            ->leftJoin('precise.product as p','pc.product_id', '=', 'p.product_id')
+            ->leftJoin('precise.customer as c','c.customer_id', '=', 'v.customer_id')
+            ->leftJoin('precise.price_list_hd as plhd', function($query){
+                $query->on('plhd.price_group_code', '=', 'c.price_group_code')
                     ->where('plhd.price_status','=','A');
-                })
-                ->leftJoin('precise.price_list_dt as pldt', function($join){
-                    $join->on('pldt.price_group_code', '=', 'plhd.price_group_code')
+            })
+            ->leftJoin('precise.price_list_dt as pldt', function($query){
+                $query->on('pldt.price_group_code', '=', 'plhd.price_group_code')
                     ->on('pldt.price_group_seq', '=', 'plhd.price_seq')
                     ->on('p.product_code','=','pldt.product_code');
-                    })
-                ->get();
+                })
+            ->get();
         return response()->json(['data'=> $this->purchaseOrder]);
     }
 

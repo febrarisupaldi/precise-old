@@ -113,7 +113,8 @@ class WorkOrderController extends Controller
     public function showByWorkcenter($id){
         $this->workOrder = DB::table("precise.work_order as wo")
             ->where('wo.workcenter_id', $id)
-	        ->where('wo.work_order_status','!=','X')
+            ->where('wo.work_order_status','!=','X')
+            ->where('wo.work_order_status','!=','N')
             ->select(
                 'wo.work_order_hd_id',
                 'wo.work_order_number',

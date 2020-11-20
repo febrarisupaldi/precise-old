@@ -477,6 +477,7 @@ Route::group(
                 Route::get('work_order', 'Api\PPIC\WorkOrderController@index');
                 Route::get('work_order/workcenter/{id}', 'Api\PPIC\WorkOrderController@showByWorkcenter');
                 Route::get('work_order/import/bom_product','Api\PPIC\WorkOrderController@showImportCheckBOMAndProduct');
+                Route::get('work_order/import/bom-mixing','Api\PPIC\WorkOrderController@showImportCheckBOMMixing');
                 Route::get('work_order/import/check_product_workcenter','Api\PPIC\WorkOrderController@showImportCheckProductAndWorkcenter');
                 Route::get('work_order/check', 'Api\PPIC\WorkOrderController@check');
                 Route::get('work_order/{id}', 'Api\PPIC\WorkOrderController@show');

@@ -259,6 +259,35 @@ class WorkOrderController extends Controller
         return response()->json($this->workOrder);
     }
 
+    public function showImportCheckBOMMixing(Request $request){
+        $validator = Validator::make($request->all(), [
+            'bom_hd_id'     => 'required'           
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        } else {
+
+            $this->workOrder = DB::table("precise.bom_hd as hd")
+            ->select(
+                'hd.bom_hd_id',
+                'hd.bom_hd_id',
+                'hd.bom_code',
+                'hd.bom_name'
+            )
+            ->join(DB::raw('(SELECT dt.material_id
+            FROM precise.bom_hd as hd
+            LEFT JOIN precise.bom_dt AS dt ON hd.bom_hd_id = dt.bom_hd_id
+            WHERE hd.bom_hd_id = '.$request->bom_hd_id.') as hdd'), 
+                function($join)
+                {
+                    $join->on('hd.product_id', '=', 'hdd.material_id');
+                })
+            ->get();
+        }
+        return response()->json(["data" => $this->workOrder]);
+    }
+
     public function showImportCheckProductAndWorkcenter(Request $request){
         $validator = Validator::make($request->all(), [
             'product_code'      => 'required',

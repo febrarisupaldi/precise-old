@@ -77,6 +77,7 @@ class WorkOrderController extends Controller
                 'wo.workcenter_id',
                 'wo.product_id',
                 'wo.bom_default', 
+                'wo.bom_default_mixing', 
                 'w.workcenter_code',
                 'w.workcenter_name', 
                 'p.product_code',

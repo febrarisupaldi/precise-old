@@ -83,7 +83,7 @@ return response()->json($this->productCustomer);
                 'a.product_id',
                 'p.product_code as Kode barang',
                 'p.product_name as Nama barang',
-                'p.uom_code', 'dt.price_idr',
+                'p.uom_code', 'pldt.price_idr',
 		'a.loss_tolerance as Loss tolerance',
 		'a.moq',
 		'a.oem_material_supply_type',

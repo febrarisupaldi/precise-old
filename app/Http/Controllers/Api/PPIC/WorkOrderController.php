@@ -77,6 +77,7 @@ class WorkOrderController extends Controller
                 'wo.workcenter_id',
                 'wo.product_id',
                 'wo.bom_default', 
+                'wo.bom_default_mixing', 
                 'w.workcenter_code',
                 'w.workcenter_name', 
                 'p.product_code',
@@ -113,7 +114,8 @@ class WorkOrderController extends Controller
     public function showByWorkcenter($id){
         $this->workOrder = DB::table("precise.work_order as wo")
             ->where('wo.workcenter_id', $id)
-	        ->where('wo.work_order_status','!=','X')
+            ->where('wo.work_order_status','!=','X')
+            ->where('wo.work_order_status','!=','N')
             ->select(
                 'wo.work_order_hd_id',
                 'wo.work_order_number',
@@ -147,8 +149,8 @@ class WorkOrderController extends Controller
             'product_id'            =>'required|exists:product,product_id',
             'work_order_qty'        =>'required|numeric',
             'bom_default'           =>'nullable|exists:bom_hd,bom_hd_id',
-            'start_date'            =>'required|date_format:Y-m-d|before_or_equal:est_finish_date',
-            'est_finish_date'       =>'required|date_format:Y-m-d|after_or_equal:start_date',
+            'start_date'            =>'required|before_or_equal:est_finish_date',
+            'est_finish_date'       =>'required|after_or_equal:start_date',
             'parent_work_order_id'  =>'nullable|exists:work_order,work_order_hd_id',
             'work_order_type'       =>'required|exists:work_order_type,work_order_type_code',
             'work_order_status'     =>'required|exists:work_order_status,work_order_status_code',
@@ -165,6 +167,7 @@ class WorkOrderController extends Controller
                     'product_id'            =>$request->product_id,
                     'work_order_qty'        =>$request->work_order_qty,
                     'bom_default'           =>$request->bom_default,
+                    'bom_default_mixing'    =>$request->bom_default_mixing,
                     'start_date'            =>$request->start_date,
                     'est_finish_date'       =>$request->est_finish_date,
 		            'work_order_description'=>$request->work_order_description,
@@ -213,6 +216,7 @@ class WorkOrderController extends Controller
                     'product_id'            =>$request->product_id,
                     'work_order_qty'        =>$request->work_order_qty,
                     'bom_default'           =>$request->bom_default,
+                    'bom_default_mixing'    =>$request->bom_default_mixing,
                     'start_date'            =>$request->start_date,
                     'est_finish_date'       =>$request->est_finish_date,
 		            'work_order_description'=>$request->work_order_description,
@@ -256,6 +260,35 @@ class WorkOrderController extends Controller
                 ->first();
         }
         return response()->json($this->workOrder);
+    }
+
+    public function showImportCheckBOMMixing(Request $request){
+        $validator = Validator::make($request->all(), [
+            'bom_hd_id'     => 'required'           
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        } else {
+
+            $this->workOrder = DB::table("precise.bom_hd as hd")
+            ->select(
+                'hd.bom_hd_id',
+                'hd.bom_hd_id',
+                'hd.bom_code',
+                'hd.bom_name'
+            )
+            ->join(DB::raw('(SELECT dt.material_id
+            FROM precise.bom_hd as hd
+            LEFT JOIN precise.bom_dt AS dt ON hd.bom_hd_id = dt.bom_hd_id
+            WHERE hd.bom_hd_id = '.$request->bom_hd_id.') as hdd'), 
+                function($join)
+                {
+                    $join->on('hd.product_id', '=', 'hdd.material_id');
+                })
+            ->get();
+        }
+        return response()->json(["data" => $this->workOrder]);
     }
 
     public function showImportCheckProductAndWorkcenter(Request $request){

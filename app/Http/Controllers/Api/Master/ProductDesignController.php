@@ -57,27 +57,25 @@ class ProductDesignController extends Controller
                 'design_name',
                 'design_description',
                 'appearance_id',
-		'license_type_id',
                 'license_type_id',
                 'color_type_id',
                 'is_active_sell',
                 'is_active_production',
-		 'is_active'
+		        'is_active'
             )
-            //->get();
-	   ->first();
+            ->first();
         //return response()->json(["data" => $this->productDesign]);
-	return response()->json( $this->productDesign);
+	    return response()->json($this->productDesign);
     }
 
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'design_code' => 'required|unique:product_design',
-            'appearance_id' => 'required|exists:product_appearance,appearance_id',
-	    'license_type_id' => 'required|exists:product_license_type,license_type_id',
-            'color_type_id' => 'required|exists:color_type,color_type_id',
-            'created_by' => 'required'
+            'design_code'       => 'required|unique:product_design',
+            'appearance_id'     => 'required|exists:product_appearance,appearance_id',
+	        'license_type_id'   => 'required|exists:product_license_type,license_type_id',
+            'color_type_id'     => 'required|exists:color_type,color_type_id',
+            'created_by'        => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -89,7 +87,7 @@ class ProductDesignController extends Controller
                     'design_name' => $request->design_name,
                     'design_description' => $request->design_description,
                     'appearance_id' => $request->appearance_id,
-		    'license_type_id' => $request->license_type_id,      
+		            'license_type_id' => $request->license_type_id,      
                     'color_type_id' => $request->color_type_id,
                     'created_by' => $request->created_by
                 ]);

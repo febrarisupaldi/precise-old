@@ -218,10 +218,6 @@ class MaterialUsageController extends Controller
             {
                 $transNum = DB::select('SELECT precise.get_transaction_number(6, :rDate) AS transNumber', ['rDate' => $data['production_date']]);
 
-                $transType = DB::table('precise.warehouse_trans_type')
-                ->where('trans_type_name', 'Production Usage')
-                ->select('trans_type_id','trans_type_code')
-                ->first();
                 $object = (object)$transNum;
                 foreach ($transNum as $key => $value)
                 {
@@ -229,13 +225,11 @@ class MaterialUsageController extends Controller
                 }
                               
                 $object1 = $object->$key;
-               
-                DB::raw(DB::select('call precise.`system_increment_transaction_counter`(6, :rDate)', ['rDate' => $data['production_date']]));
-
+                              
                 $transhd = DB::table('precise.warehouse_trans_hd')
                 ->insertGetId([
                     'trans_number'       => $object1->transNumber,
-                    'trans_type'         => $transType->trans_type_id,
+                    'trans_type'         => $data['trans_type_id'],
                     'trans_date'         => $data['production_date'],
                     'trans_from'         => $data['warehouse_id'],
                     'work_order_id'      => $data['work_order_hd_id'],
@@ -247,7 +241,7 @@ class MaterialUsageController extends Controller
                     $whDt[] = [
                         'trans_hd_id'           => $transhd,
                         'trans_number'          => $object1->transNumber,
-                        'trans_type'            => $transType->trans_type_id,
+                        'trans_type'            => $data['trans_type_id'],
                         'trans_seq'             => $trans_seq,
                         'product_id'            => $transdt['material_id'],
                         'trans_in_qty'          => 0.0000,
@@ -300,7 +294,7 @@ class MaterialUsageController extends Controller
                         'material_std_uom'      => $d['material_uom'],
                         'warehouse_id'          => $data['warehouse_id'],
                         'InvtNmbr'              => $object1->transNumber,
-                        'InvtType'              => $transType->trans_type_code,
+                        'InvtType'              => $data['trans_type_code'],
                         'trans_hd_id'           => $transhd,
                         'created_by'            => $data['created_by']
                     ];
@@ -314,6 +308,8 @@ class MaterialUsageController extends Controller
                         ->where('trans_hd_id', $transhd)
                         ->select('usage_id')
                         ->first();
+
+                DB::raw(DB::select('call precise.`system_increment_transaction_counter`(6, :rDate)', ['rDate' => $data['production_date']]));
 
                 DB::commit();
                 return response()->json(['status' => 'ok', 'message' => $trans->usage_id], 200);
@@ -363,12 +359,7 @@ class MaterialUsageController extends Controller
                 
                 DB::table('precise.material_usage')
                 ->where('trans_hd_id', $data['trans_hd_id'])
-                ->delete();
-    
-                $transType = DB::table('precise.warehouse_trans_type')
-                ->where('trans_type_name', 'Production Usage')
-                ->select('trans_type_id','trans_type_code')
-                ->first();
+                ->delete();                   
                 
                 $tran_Seq = 0;
                 $tranSeq = DB::table('precise.warehouse_trans_dt')
@@ -410,7 +401,7 @@ class MaterialUsageController extends Controller
                     $whDt[] = [
                         'trans_hd_id'           => $data['trans_hd_id'],
                         'trans_number'          => $data['InvtNmbr'],
-                        'trans_type'            => $transType->trans_type_id,
+                        'trans_type'            => $data['trans_type_id'],
                         'trans_seq'             => $tran_Seq,
                         'product_id'            => $transdt['material_id'],
                         'trans_in_qty'          => 0.0000,

@@ -500,6 +500,58 @@ class PurchaseOrderController extends Controller
         }
     }
 
+    // public function remaining($id){
+    //     $sub = DB::table('mold_status') // this table name actually does not do anything. just to avoid error/tricking the query builder, as we just select user defined variable.        
+    //     ->select(
+    //         DB::raw('@startDate:=precise.`get_beginning_date_from_date`(sysdate()) as startDate'),
+    //         DB::raw('@endDate:=date(sysdate()) as endDate')
+    //         )
+    //     ;
+            
+    //     $this->purchaseOrder = 
+    //             DB::table(DB::raw('('.$sub->toSql().') as p'))
+    //             ->where('v.oem_order_hd_id', $id)
+    //             ->select(
+    //                 'v.oem_order_dt_id',
+    //                 'v.product_id',
+    //                 'v.product_code',
+    //                 'v.product_name',
+    //                 'pldt.price_idr',
+    //                 'v.oem_order_qty',
+    //                 'v.due_date',
+    //                 'v.oem_order_dt_seq',
+    //                 'v.total_on_going_qty',
+    //                 'v.total_received_qty',
+    //                 'v.outstanding_qty',
+    //                 DB::raw('min(psq) as PSQ'),
+    //                 DB::raw('0 as delivery_qty'),
+    //                 'v.uom_code',
+    //                 DB::raw('0 as packaging_id'),
+    //                 DB::raw('null as packaging_code'),
+    //                 DB::raw('null as packaging_name'),
+    //                 DB::raw('0 as packaging_qty'),
+    //                 DB::raw('null as packaging_uom_code'),
+    //                 DB::raw('null as packaging_description')
+    //             )
+    //             ->join('precise.view_oem_permitted_shipping_qty as v', 'v.oem_order_hd_id', '=', 'v.oem_order_hd_id')
+    //             ->leftJoin('precise.customer as c', 'v.customer_id','=','c.customer_id')
+    //             ->leftJoin('precise.price_list_hd as plhd', function($join){
+    //                 $join
+    //                 ->on('plhd.price_group_code', '=', 'c.price_group_code')
+    //                 ->where('plhd.price_status','=','A');
+    //             })
+    //             ->leftJoin('precise.price_list_dt as pldt', function($join){
+    //                 $join->on('plhd.price_group_code', '=', 'pldt.price_group_code')
+    //                 ->on('pldt.price_group_seq', '=', 'plhd.price_seq')
+    //                 ->on('v.product_code','=','pldt.product_code');
+    //                 })
+    //             ->mergeBindings($sub)
+    //             ->groupBy('v.oem_order_dt_id','pldt.price_idr')
+    //             ->get();
+        
+    //     return response()->json(['data'=> $this->purchaseOrder]);
+    // }
+
     public function remaining($id){
         // $sub = DB::table('mold_status') // this table name actually does not do anything. just to avoid error/tricking the query builder, as we just select user defined variable.        
         // ->select(

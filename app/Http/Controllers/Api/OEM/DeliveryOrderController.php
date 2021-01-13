@@ -568,13 +568,21 @@ class DeliveryOrderController extends Controller
                     'dt.uom_code', 
                     'dt.received_qty',
                     'dt.uom_code_received',
-		            DB::raw("ifnull(dt.delivery_qty, 0) - ifnull(dt.received_qty, 0) as receipt_diff"),
+                    DB::raw("ifnull(dt.delivery_qty, 0) - ifnull(dt.received_qty, 0) as receipt_diff"),
+                    DB::raw("ifnull(dt.packaging_id, 0)"), 
+                    'prod2.product_code AS packaging_code', 
+                    'prod2.product_name AS packaging_name', 
+                    'phd.packaging_alias', 
+                    'dt.packaging_qty', 
+                    'prod2.uom_code AS packaging_uom_code',
                     'hd.created_on',
                     'hd.created_by',
                     'hd.updated_on',
                     'hd.updated_by'
                 )
                 ->leftJoin('precise.oem_delivery_dt as dt','hd.oem_delivery_hd_id','=','dt.oem_delivery_hd_id')
+                ->leftJoin('precise.packaging_hd as phd','dt.packaging_id','=','phd.packaging_id')
+                ->leftJoin('precise.product as prod2','phd.packaging_id','=','prod2.product_id')
                 ->leftJoin('precise.oem_order_hd as POHd','hd.oem_order_hd_id','=','POHd.oem_order_hd_id')
                 ->leftJoin('precise.customer as cust','hd.customer_id','=','cust.customer_id')
                 ->leftJoin('precise.warehouse as wh','hd.warehouse_id','=','wh.warehouse_id')
@@ -622,12 +630,20 @@ class DeliveryOrderController extends Controller
                         'odp.packaging_qty as received_qty',
                         'prod.uom_code as uom_code_received',
                         DB::raw("ifnull(odp.packaging_qty, 0) - ifnull(odp.packaging_qty, 0) as receipt_diff"),
+                        DB::raw("ifnull('odp.packaging_id', 0)"), 
+                        'prod2.product_code AS packaging_code', 
+                        'prod2.product_name AS packaging_name', 
+                        'phd.packaging_alias', 
+                        'odp.packaging_qty', 
+                        'prod2.uom_code AS packaging_uom_code', 
                         'hd.created_on',
                         'hd.created_by',
                         'hd.updated_on',
                         'hd.updated_by'
                     )
                     ->leftJoin('precise.oem_delivery_packaging as odp','hd.oem_delivery_hd_id','=','odp.oem_delivery_hd_id')
+                    ->leftJoin('precise.packaging_hd as phd','odp.packaging_id','=','phd.packaging_id')
+                    ->leftJoin('precise.product as prod2','phd.packaging_id','=','prod2.product_id')
                     ->leftJoin('precise.oem_order_hd as POHd','hd.oem_order_hd_id','=','POHd.oem_order_hd_id')
                     ->leftJoin('precise.customer as cust','hd.customer_id','=','cust.customer_id')
                     ->leftJoin('precise.warehouse as wh','hd.warehouse_id','=','wh.warehouse_id')

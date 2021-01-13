@@ -229,11 +229,7 @@ class ProductionResultController extends Controller
             try
             {
                 $transNum = DB::select('SELECT precise.get_transaction_number(5, :rDate) AS transNumber', ['rDate' => $data['result_date']]);
-
-                $transType = DB::table('precise.warehouse_trans_type')
-                ->where('trans_type_name', 'Production Result')
-                ->select('trans_type_id', 'trans_type_code')
-                ->first();
+               
                 $object = (object)$transNum;
                 foreach ($transNum as $key => $value)
                 {
@@ -241,13 +237,11 @@ class ProductionResultController extends Controller
                 }
                               
                 $object1 = $object->$key;
-               
-                DB::raw(DB::select('call precise.`system_increment_transaction_counter`(5, :rDate)', ['rDate' => $data['result_date']]));
-
+                               
                 $transhd = DB::table('precise.warehouse_trans_hd')
                 ->insertGetId([
                     'trans_number'       => $object1->transNumber,
-                    'trans_type'         => $transType->trans_type_id,
+                    'trans_type'         => $data['trans_type_id'],
                     'trans_date'         => $data['result_date'],
                     'trans_from'         => $data['warehouse_id'],
                     'work_order_id'      => $data['work_order_hd_id'],
@@ -260,7 +254,7 @@ class ProductionResultController extends Controller
                     $whDt[] = [
                         'trans_hd_id'           => $transhd,
                         'trans_number'          => $object1->transNumber,
-                        'trans_type'            => $transType->trans_type_id,
+                        'trans_type'            => $data['trans_type_id'],
                         'trans_seq'             => 1,
                         'product_id'            => $transdt['product_id'],
                         'trans_in_qty'          => $transdt['result_qty'],
@@ -317,7 +311,7 @@ class ProductionResultController extends Controller
                         'result_qty'            => $d['result_qty'],
                         'result_warehouse'      => $d['result_warehouse'],
                         'InvtNmbr'              => $object1->transNumber,
-                        'InvtType'              => $transType->trans_type_code,
+                        'InvtType'              => $data['trans_type_code'],
                         'trans_hd_id'           => $transhd,
                         'created_by'            => $data['created_by']
                     ];
@@ -364,6 +358,7 @@ class ProductionResultController extends Controller
                         ->select('PrdNumber')
                         ->first();
 
+                DB::raw(DB::select('call precise.`system_increment_transaction_counter`(5, :rDate)', ['rDate' => $data['result_date']]));
                 DB::commit();
                 return response()->json(['status' => 'ok', 'message' => $id], 200);
             }
